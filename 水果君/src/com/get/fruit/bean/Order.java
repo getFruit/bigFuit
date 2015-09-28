@@ -27,7 +27,6 @@ public class Order extends BmobObject {
     private State state;//订单状态
     private SendWay sendway;//派送方式
     private Double sum;//金额
-    private PayWay payway;//支付方式
     private Boolean pay;//是否支付
     private UserAdress consignee;//收货人
     private String messenger;//留言
@@ -88,12 +87,6 @@ public class Order extends BmobObject {
 	}
 	public void setSendway(SendWay sendway) {
 		this.sendway = sendway;
-	}
-	public PayWay getPayway() {
-		return payway;
-	}
-	public void setPayway(PayWay payway) {
-		this.payway = payway;
 	}
 	public Boolean getPay() {
 		return pay;

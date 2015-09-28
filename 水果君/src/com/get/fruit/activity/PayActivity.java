@@ -19,7 +19,6 @@ import android.widget.TextView;
 import com.bmob.pay.tool.BmobPay;
 import com.bmob.pay.tool.PayListener;
 import com.get.fruit.Config;
-import com.get.fruit.PayResultActivity;
 import com.get.fruit.R;
 import com.get.fruit.bean.Order;
 
@@ -63,9 +62,9 @@ public class PayActivity extends BaseActivity implements OnClickListener {
 	 */
 	@Override
 	public void onClick(View v) {
-		if (null==order) {
+		/*if (null==order) {
 			return;
-		}
+		}*/
 		// TODO Auto-generated method stub
 		switch (v.getId()) {
 		case R.id.pay1:
@@ -114,13 +113,15 @@ public class PayActivity extends BaseActivity implements OnClickListener {
 	// 调用支付宝支付
 	private void payByAli() {
 			showDialog("正在获取订单...");
-			bmobPay.pay(order.getSum(), order.getFruit().getName(), order.getFruit().getDescribe(), new PayListener() {
+			bmobPay=new BmobPay(PayActivity.this);
+			bmobPay.pay(0.3, "测试", "我的毛爷爷啊", new PayListener() {
 
 				// 因为网络等原因,支付结果未知(小概率事件),出于保险起见稍后手动查询
 				@Override
 				public void unknow() {
 					hideDialog();
-					startAnimActivityWithData(PayResultActivity.class, "result", "unknow");
+					ShowLog("unlnow: ");
+					//startAnimActivityWithData(PayResultActivity.class, "result", "unknow");
 				}
 
 				@Override
@@ -134,14 +135,16 @@ public class PayActivity extends BaseActivity implements OnClickListener {
 				public void orderId(String orderId) {
 					// 此处应该保存订单号,比如保存进数据库等,以便以后查询
 					order.setObjectId(orderId);
-					showDialog("获取订单成功!请等待跳转到支付页面~");
+					showDialog("获取订单成功!请等待跳转到支付页面~"+orderId);
+					ShowLog("获取订单成功!请等待跳转到支付页面~"+orderId);
 				}
 
 				// 支付失败,原因可能是用户中断支付操作,也可能是网络原因
 				@Override
 				public void fail(int code, String reason) {
 					hideDialog();
-					startAnimActivityWithData(PayResultActivity.class, "result", "fail:"+code+":"+reason);
+					ShowLog("fail "+code+reason);
+					//startAnimActivityWithData(PayResultActivity.class, "result", "fail:"+code+":"+reason);
 				}
 			});
 		}

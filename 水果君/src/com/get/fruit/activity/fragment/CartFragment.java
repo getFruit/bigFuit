@@ -50,7 +50,7 @@ public class CartFragment extends BaseFragment {
 	private QuickAdapter<CartItem> mQuickAdapter;
 	private TextView emptyView;
 	List<Integer> checkedItems=new LinkedList<Integer>();
-	List<CartItem> allItems=new LinkedList<CartItem>();
+	List<CartItem> allItems;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -168,14 +168,12 @@ public class CartFragment extends BaseFragment {
 				if(CollectionUtils.isNotNull(arg0)){
 					emptyView.setVisibility(View.GONE);
 					allItems.clear();
-					allItems.addAll(arg0);
-					
+					allItems=arg0;
 					mQuickAdapter.clear();
 					mQuickAdapter.addAll(allItems);
 					loaded=true;
 					
 				}else {
-					
 					emptyView.setVisibility(View.VISIBLE);
 					emptyView.setText("¹ºÎï³µ¿Õ¿ÕµÄ");
 				}
@@ -232,12 +230,15 @@ public class CartFragment extends BaseFragment {
 			@Override
 			public void onClick(View v) {
 				List<Order> items=new ArrayList<>();
+				List<CartItem> cartItems=new ArrayList<>();
 				for (Integer i:checkedItems) {
 					CartItem c=allItems.remove((int)i);
+					cartItems.add(c);
 					Order order=new Order(me,c.getFruit(),c.getCount());
 					items.add(order);
 				}
 				checkedItems.clear();
+				allItems.removeAll(cartItems);
 				// TODO Auto-generated method stub
 				startAnimActivityWithData(OrderEditActivity.class, "orders", (Serializable) items);
 			}
