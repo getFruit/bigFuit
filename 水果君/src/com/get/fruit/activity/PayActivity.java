@@ -3,6 +3,7 @@ package com.get.fruit.activity;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -16,11 +17,16 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
+import cn.bmob.v3.BmobObject;
+import cn.bmob.v3.listener.DeleteListener;
+import cn.bmob.v3.listener.UpdateListener;
+
 import com.bmob.pay.tool.BmobPay;
 import com.bmob.pay.tool.PayListener;
 import com.get.fruit.Config;
 import com.get.fruit.R;
 import com.get.fruit.bean.Order;
+import com.get.fruit.bean.Order.State;
 
 public class PayActivity extends BaseActivity implements OnClickListener {
 
@@ -33,11 +39,26 @@ public class PayActivity extends BaseActivity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_pay);
-		order=(Order) getIntent().getSerializableExtra("order");
 		BmobPay.init(this,Config.applicationId);
 		initView();
 	}
-
+	
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onResume()
+	 */
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		order=(Order) getIntent().getSerializableExtra("order");
+		if (null==price) {
+			price=(TextView) findViewById(R.id.price);
+		}
+		if (null!=order) {
+			price.setText(order.getSum()+"");
+		}
+	}
+	
 	/** 
 	* @Title: initView 
 	* @Description: TODO
@@ -73,11 +94,8 @@ public class PayActivity extends BaseActivity implements OnClickListener {
 		case R.id.pay2:
 			payByWeiXin();
 			break;
-		case R.id.pay3:
-			
-			break;
 		case R.id.cancel:
-			
+			deleteOrder();
 			break;
 
 		default:
@@ -86,10 +104,33 @@ public class PayActivity extends BaseActivity implements OnClickListener {
 	}
 	
 	
-	
-	
-	
-	
+
+
+	/** 
+	* @Title: deleteOrder 
+	* @Description: TODO
+	* @param 
+	* @return void
+	* @throws 
+	*/
+	private void deleteOrder() {
+		// TODO Auto-generated method stub
+		Order temOrder =new Order();
+		temOrder.setObjectId(order.getObjectId());
+		temOrder.delete(PayActivity.this, new DeleteListener() {
+			
+			@Override
+			public void onSuccess() {
+				ShowToast("已删除，请刷新");
+				finish();
+			}
+			
+			@Override
+			public void onFailure(int arg0, String arg1) {
+				ShowToast("操作失败:"+arg1);
+			}
+		});
+	}
 	
 	public  void showDialog(String message) {
 		if (dialog == null) {
@@ -108,25 +149,28 @@ public class PayActivity extends BaseActivity implements OnClickListener {
 			}
 	}
 	
-	
-	
 	// 调用支付宝支付
 	private void payByAli() {
 			showDialog("正在获取订单...");
 			bmobPay=new BmobPay(PayActivity.this);
-			bmobPay.pay(0.3, "测试", "我的毛爷爷啊", new PayListener() {
+			bmobPay.pay(order.getSum(), order.getFruit().getName(), order.getFruit().getDescribe(), new PayListener() {
 
 				// 因为网络等原因,支付结果未知(小概率事件),出于保险起见稍后手动查询
 				@Override
 				public void unknow() {
 					hideDialog();
 					ShowLog("unlnow: ");
-					//startAnimActivityWithData(PayResultActivity.class, "result", "unknow");
+					startAnimActivityWithData(PayResultActivity.class, "result", "unknow");
 				}
 
 				@Override
 				public void succeed() {
 					hideDialog();
+					Order temOrder=new Order();
+					temOrder.setOrderid(order.getOrderid());
+					temOrder.setPay(true);
+					new BmobObject().update(PayActivity.this, order.getObjectId(),null);
+					order.getFruit().increment("paynum");
 					startAnimActivityWithData(PayResultActivity.class, "result", "success");
 				}
 
@@ -134,7 +178,7 @@ public class PayActivity extends BaseActivity implements OnClickListener {
 				@Override
 				public void orderId(String orderId) {
 					// 此处应该保存订单号,比如保存进数据库等,以便以后查询
-					order.setObjectId(orderId);
+					order.setOrderid(orderId);
 					showDialog("获取订单成功!请等待跳转到支付页面~"+orderId);
 					ShowLog("获取订单成功!请等待跳转到支付页面~"+orderId);
 				}
@@ -144,7 +188,7 @@ public class PayActivity extends BaseActivity implements OnClickListener {
 				public void fail(int code, String reason) {
 					hideDialog();
 					ShowLog("fail "+code+reason);
-					//startAnimActivityWithData(PayResultActivity.class, "result", "fail:"+code+":"+reason);
+					startAnimActivityWithData(PayResultActivity.class, "result", "fail:"+code+":"+reason);
 				}
 			});
 		}
@@ -163,6 +207,11 @@ public class PayActivity extends BaseActivity implements OnClickListener {
 			@Override
 			public void succeed() {
 				hideDialog();
+				Order temOrder=new Order();
+				temOrder.setPay(true);
+				temOrder.setOrderid(order.getOrderid());
+				new BmobObject().update(PayActivity.this, order.getObjectId(),null);
+				order.getFruit().increment("paynum");
 				startAnimActivityWithData(PayResultActivity.class, "result", "success");
 			}
 
@@ -170,7 +219,7 @@ public class PayActivity extends BaseActivity implements OnClickListener {
 			@Override
 			public void orderId(String orderId) {
 				// 此处应该保存订单号,比如保存进数据库等,以便以后查询
-				order.setObjectId(orderId);
+				order.setOrderid(orderId);
 				showDialog("获取订单成功!请等待跳转到支付页面~");
 			}
 

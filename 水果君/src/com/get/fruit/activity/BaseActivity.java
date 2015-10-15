@@ -198,10 +198,6 @@ public class BaseActivity extends FragmentActivity {
 	public void startAnimActivity(Class<?> cla) {
 		this.startActivity(new Intent(this, cla));
 	}
-	
-	public void startAnimActivity(Intent intent) {
-		this.startActivity(intent);
-	}
 
 	public void startAnimActivityWithData(Class<?> cla,String key, Serializable value) {
 		Intent intent=new Intent(this, cla);

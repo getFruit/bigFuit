@@ -11,7 +11,7 @@ import android.util.Log;
 
 public class CacheUtils {
 	/**
-	 * 获取/data/data/files目录
+	 * /data/data/files
 	 * 
 	 * @param context
 	 * @return

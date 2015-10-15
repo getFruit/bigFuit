@@ -1,5 +1,6 @@
 package com.get.fruit.activity;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import cn.bmob.im.BmobUserManager;
 
@@ -37,5 +38,5 @@ public abstract class ActivityBase extends BaseActivity {
 			finish();
 		}
 	}
-
+	
 }

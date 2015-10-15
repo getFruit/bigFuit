@@ -29,5 +29,14 @@ public class GardenFragment extends BaseFragment {
 		super.onActivityCreated(savedInstanceState);
 		//initView();
 	}
+
+	/* (non-Javadoc)
+	 * @see com.get.fruit.activity.BaseFragment#lazyLoad()
+	 */
+	@Override
+	protected void lazyLoad() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

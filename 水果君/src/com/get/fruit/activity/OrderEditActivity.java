@@ -3,6 +3,7 @@ package com.get.fruit.activity;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -18,11 +19,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import cn.bmob.v3.BmobObject;
+import cn.bmob.v3.listener.DeleteListener;
+import cn.bmob.v3.listener.SaveListener;
+import cn.bmob.v3.listener.UpdateListener;
+
+import com.baidu.platform.comapi.map.u;
 import com.bmob.pay.tool.BmobPay;
 import com.bmob.pay.tool.PayListener;
 import com.get.fruit.Config;
 import com.get.fruit.R;
 import com.get.fruit.bean.Order;
+import com.get.fruit.bean.User;
+import com.get.fruit.bean.Order.SendWay;
+import com.get.fruit.bean.Order.State;
+import com.get.fruit.bean.UserAdress;
 import com.get.fruit.util.StringUtils;
 
 public class OrderEditActivity extends ActivityBase implements OnClickListener {
@@ -55,6 +66,7 @@ public class OrderEditActivity extends ActivityBase implements OnClickListener {
 	* @return void
 	* @throws 
 	*/
+	
 	private void setView() {
 		// TODO Auto-generated method stub
 		StringBuffer sb=new StringBuffer();
@@ -122,7 +134,8 @@ public class OrderEditActivity extends ActivityBase implements OnClickListener {
 	public void order_name(View view)
 	{
 		final EditText edit_text=new EditText(this);
-		edit_text.setHint("你的大名就够了");
+		edit_text.setHint("可以是你的名字");
+		edit_text.setMaxWidth(12);
 		new AlertDialog.Builder(this)
 		.setTitle("请输入接头暗号")
 		.setIcon(android.R.drawable.ic_dialog_info)
@@ -132,8 +145,7 @@ public class OrderEditActivity extends ActivityBase implements OnClickListener {
 			@Override  
 			public void onClick(DialogInterface dialog, int which) {  
 				// TODO Auto-generated method stub 
-				nameString=edit_text.getText().toString();
-				name.setText(nameString);
+				name.setText(edit_text.getText().toString());
 			}})  
 			.setNegativeButton("取消", null)
 			.show();
@@ -155,8 +167,7 @@ public class OrderEditActivity extends ActivityBase implements OnClickListener {
 					ShowToast("事关重大，不能乱来");
 					return;
 				}
-				phoneString=edit_text.getText().toString();
-				phone.setText(phoneString);
+				phone.setText(edit_text.getText().toString());
 			}})  
 			.setNegativeButton("取消", null)
 			.show();
@@ -174,8 +185,7 @@ public class OrderEditActivity extends ActivityBase implements OnClickListener {
 			@Override  
 	 	    public void onClick(DialogInterface dialog, int which) {  
 	 	        // TODO Auto-generated method stub  
-				addressString=edit_text.getText().toString();
-	 	        address.setText(addressString);
+	 	        address.setText(edit_text.getText().toString());
 	 	    }})  
 	 	.setNegativeButton("取消", null)
 	 	.show();
@@ -191,7 +201,7 @@ public class OrderEditActivity extends ActivityBase implements OnClickListener {
 	 	    @Override  
 	 	    public void onClick(DialogInterface dialog, int which) {  
 	 	        // TODO Auto-generated method stub  
-	 	    	messengerString=edit_text.getText().toString().toString();
+	 	    	messengerString=edit_text.getText().toString();
 	 	        messenger.setText(messengerString);
 	 	    }})  
 	 	.setNegativeButton("取消", null)
@@ -220,31 +230,62 @@ public class OrderEditActivity extends ActivityBase implements OnClickListener {
 	}
 	*/
 	
+	ProgressDialog progressDialog;
 	public void submit_order(View view)
 	{
 		if (!inputValidate()) {
 			return;
 		}
+		progressDialog=new ProgressDialog(this);
+		progressDialog.setMessage("正在下单");
+		progressDialog.setCanceledOnTouchOutside(false);
+		progressDialog.setCancelable(false);
+		progressDialog.show();
 		saveOrder();
-		orderView.setVisibility(View.GONE);
-		payView.setVisibility(View.VISIBLE);
-		initView2();
 	}
 
 
 	//封装order数据，保存到云端
 	public void saveOrder() {
+		saveList=new ArrayList<BmobObject>();
 		for(Order order:orders){
-			
+			order.setPay(false);
+			order.setName(nameString);
+			order.setPhone(phoneString);
+			order.setAddress(addressString);
+			order.setMessenger(messengerString);
+			order.setSendway(SendWay.送货上门);
+			order.setState(State.等待支付);
+			saveList.add(order);
 		}
+		new Order().insertBatch(this, saveList, new SaveListener() {
+			
+			@Override
+			public void onSuccess() {
+				saveList.clear();
+				progressDialog.dismiss();
+				orderView.setVisibility(View.GONE);
+				payView.setVisibility(View.VISIBLE);
+				initView2();
+				savaUserInfo();
+			}
+			
+			private void savaUserInfo() {
+				// TODO Auto-generated method stub
+				User user =new User();
+				user.setRealName(nameString);
+				user.setSchool(addressString);
+				user.update(OrderEditActivity.this, me.getObjectId(), null);
+			}
+
+			@Override
+			public void onFailure(int arg0, String arg1) {
+				progressDialog.dismiss();
+				saveList.clear();
+				ShowToast("下单失败，稍后再试");
+			}
+		});
 	}
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	/** 
@@ -256,14 +297,17 @@ public class OrderEditActivity extends ActivityBase implements OnClickListener {
 	*/
 	private boolean inputValidate() {
 		// TODO Auto-generated method stub
+		nameString=(String) name.getText();
 		if (StringUtils.isEmpty(nameString)) {
 			ShowToast("还能不能好好收货了，请输入接头暗号");
 			return false;
 		}
+		phoneString=(String) phone.getText();
 		if(!StringUtils.isPhone(phoneString)){
 			ShowToast("不写电话的默认打911，奥巴马来查水表咯");
 			return false;
 		}
+		addressString=(String) address.getText();
 		if (StringUtils.isEmpty(addressString)) {
 			ShowToast("送到火星去了我可不管，地址都不写");
 			return false;
@@ -296,7 +340,7 @@ public class OrderEditActivity extends ActivityBase implements OnClickListener {
 		pay2.setOnClickListener(this);
 		pay3.setOnClickListener(this);
 		cancel.setOnClickListener(this);
-		price.setText(sum+"");
+		payprice.setText(sum+"");
 	}
 
 	/* (non-Javadoc)
@@ -316,10 +360,10 @@ public class OrderEditActivity extends ActivityBase implements OnClickListener {
 			payByWeiXin();
 			break;
 		case R.id.pay3:
-			
+			updateOrders();
 			break;
 		case R.id.cancel:
-			
+			deleteOrders();
 			break;
 
 		default:
@@ -328,6 +372,78 @@ public class OrderEditActivity extends ActivityBase implements OnClickListener {
 	}
 	
 	
+	/** 
+	* @Title: updateOrders 
+	* @Description: TODO
+	* @param 
+	* @return void
+	* @throws 
+	*/
+	private ArrayList<BmobObject> saveList;
+	private void updateOrders() {
+		saveList=new ArrayList<BmobObject>();
+		for(Order order:orders){
+			Order tempOrder =new Order();
+			tempOrder.setState(State.等待发货);
+			saveList.add(tempOrder);
+		}
+		new Order().updateBatch(this, saveList, new UpdateListener() {
+			
+			@Override
+			public void onSuccess() {
+				saveList.clear(); 
+				updateFruit();
+				startAnimActivityWithData(PayResultActivity.class, "result", "success");
+			}
+			
+			@Override
+			public void onFailure(int arg0, String arg1) {
+				progressDialog.dismiss();
+				saveList.clear();
+				ShowToast("下单失败，稍后再试");
+			}
+		});
+	}
+	/** 
+	 * @Title: updateFruit 
+	 * @Description: 购买人数加一
+	 * @param 
+	 * @return void
+	 * @throws 
+	 */
+	private void updateFruit() {
+		for(Order order:orders){
+			order.getFruit().increment("paynum");
+		}
+	}
+
+
+	/** 
+	* @Title: deleteOrder 
+	* @Description: TODO
+	* @param 
+	* @return void
+	* @throws 
+	*/
+	private void deleteOrders() {
+		// TODO Auto-generated method stub
+		new BmobObject().deleteBatch(OrderEditActivity.this, saveList, new DeleteListener() {
+			
+			@Override
+			public void onSuccess() {
+				payView.setVisibility(View.GONE);
+				orderView.setVisibility(View.VISIBLE);
+			}
+			
+			@Override
+			public void onFailure(int arg0, String arg1) {
+				// TODO Auto-generated method stub
+				ShowToast("操作失败");
+			}
+		});
+	}
+
+
 	public  void showDialog(String message) {
 		if (dialog == null) {
 			dialog = new ProgressDialog(this);
@@ -350,7 +466,7 @@ public class OrderEditActivity extends ActivityBase implements OnClickListener {
 	private void payByAli() {
 			showDialog("正在获取订单...");
 			bmobPay=new BmobPay(OrderEditActivity.this);
-			bmobPay.pay(0.3, "测试", "我的毛爷爷啊", new PayListener() {
+			bmobPay.pay(sum, contentString, messengerString, new PayListener() {
 
 				// 因为网络等原因,支付结果未知(小概率事件),出于保险起见稍后手动查询
 				@Override
@@ -364,7 +480,7 @@ public class OrderEditActivity extends ActivityBase implements OnClickListener {
 				public void succeed() {
 					hideDialog();
 					ShowLog("succeed: ");
-					//startAnimActivityWithData(PayResultActivity.class, "result", "success");
+					startAnimActivityWithData(PayResultActivity.class, "result", "success");
 				}
 
 				// 无论成功与否,返回订单号
@@ -380,7 +496,7 @@ public class OrderEditActivity extends ActivityBase implements OnClickListener {
 				public void fail(int code, String reason) {
 					hideDialog();
 					ShowLog("fail "+code+reason);
-					//startAnimActivityWithData(PayResultActivity.class, "result", "fail:"+code+":"+reason);
+					startAnimActivityWithData(PayResultActivity.class, "result", "fail:"+code+":"+reason);
 				}
 			});
 		}

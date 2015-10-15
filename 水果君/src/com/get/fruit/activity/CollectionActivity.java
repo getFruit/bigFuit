@@ -52,6 +52,8 @@ public class CollectionActivity extends BaseActivity {
 			return;
 		}
 		mListView.pullRefreshing();
+		setEmptyView(null);
+		query();
 	}
 	
 	
@@ -125,6 +127,7 @@ public class CollectionActivity extends BaseActivity {
 			public void onRefresh() {
 				// TODO Auto-generated method stub
 				ShowLog("onRefresh...");
+				setEmptyView(null);
 				query();
 			}
 			
@@ -132,6 +135,7 @@ public class CollectionActivity extends BaseActivity {
 			public void onLoadMore() {
 				// TODO Auto-generated method stub
 				ShowLog("onLoadMore...");
+				setEmptyView(null);
 				query();
 			}
 
@@ -179,21 +183,20 @@ public class CollectionActivity extends BaseActivity {
 	
 	
 	private void query() {
-		// TODO Auto-generated method stub
+		//here
 		BmobQuery<Fruit> query=new BmobQuery<Fruit>();
 		query.addWhereRelatedTo("likes", new BmobPointer(me));
-		
 		query.findObjects(this, new FindListener<Fruit>() {
 			
 			@Override
 			public void onError(int arg0, String arg1) {
-				// TODO Auto-generated method stub
 				setEmptyView("数据获取错误" +arg0+ arg1);
+				stopRefresh();
 			}
 
 			@Override
 			public void onSuccess(List<Fruit> arg0) {
-				// TODO Auto-generated method stub
+				stopRefresh();
 				if(CollectionUtils.isNotNull(arg0)){
 					setEmptyView("");
 					allItems=arg0;

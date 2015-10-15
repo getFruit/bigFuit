@@ -8,36 +8,45 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
-
+import android.widget.TextView;
+import b.Android;
+import cn.bmob.v3.listener.DeleteListener;
+import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.update.BmobUpdateAgent;
 
 import com.get.fruit.App;
 import com.get.fruit.BmobConstants;
 import com.get.fruit.R;
+import com.get.fruit.activity.BaseFragment.FragmentCallBack;
 import com.get.fruit.activity.fragment.CartFragment;
-import com.get.fruit.activity.fragment.CartFragment.CartCallBack;
 import com.get.fruit.activity.fragment.CategoryFragment;
 import com.get.fruit.activity.fragment.GardenFragment;
 import com.get.fruit.activity.fragment.HomeFragment;
 import com.get.fruit.activity.fragment.PersonFragment;
 import com.get.fruit.adapter.ZoomOutPageTransformer;
+import com.get.fruit.adapter.util.BaseAdapterHelper;
+import com.get.fruit.adapter.util.QuickAdapter;
+import com.get.fruit.bean.Order;
 import com.get.fruit.util.StringUtils;
 import com.get.fruit.view.HeaderLayout;
 import com.get.fruit.view.HeaderLayout.onLeftImageButtonClickListener;
 import com.get.fruit.view.HeaderLayout.onRightImageButtonClickListener;
+import com.get.fruit.view.listview.XListView;
+import com.get.fruit.view.listview.XListView.IXListViewListener;
 
 public class MainActivity extends BaseActivity implements OnClickListener,
-		 CartCallBack {
+		 FragmentCallBack {
 
 	private ViewPager mViewPager;
 	private FragmentPagerAdapter mAdapter;
 	private ImageButton[] mButtons = new ImageButton[5];
-	private Fragment fHome, fCategory, fPerson, fCart, fGarden;
-	private Fragment[] mFragments;
+	private BaseFragment fHome, fCategory, fPerson, fCart, fGarden;
+	private BaseFragment[] mFragments;
 	private static int currentSelect;
 	private CharSequence address = "天津";
-	private Intent intent;
 	private int to = 0;// 需要前往的fragment
 
 	private onLeftImageButtonClickListener homeLeftListener = new onLeftImageButtonClickListener() {
@@ -46,9 +55,9 @@ public class MainActivity extends BaseActivity implements OnClickListener,
 		public void onClick() {
 			// TODO Auto-generated method stub
 			ShowToast("暂时只支持天津地区，更多地区稍后支持！");
-			Intent intent = new Intent(MainActivity.this,
+			/*Intent intent = new Intent(MainActivity.this,
 					LocationActivity.class);
-			startAnimActivityForResult(intent,BmobConstants.REQUESTCODE_FROM_MAINACTIVITY_FORADDRESS);
+			startAnimActivityForResult(intent,BmobConstants.REQUESTCODE_FROM_MAINACTIVITY_FORADDRESS);*/
 		}
 	};
 	private onLeftImageButtonClickListener baseLeftListener = new onLeftImageButtonClickListener() {
@@ -73,6 +82,9 @@ public class MainActivity extends BaseActivity implements OnClickListener,
 		ShowLog("MainAc >> request: "+requestCode+"   result: "+resultCode);
 		switch (requestCode) {
 		case BmobConstants.REQUESTCODE_FROM_MAINACTIVITY_FORADDRESS:
+			if (data==null) {
+				break;
+			}
 			address=data.getStringExtra("address");
 			if (StringUtils.isEmpty(address)) {
 				break;
@@ -87,6 +99,26 @@ public class MainActivity extends BaseActivity implements OnClickListener,
 		}
 	}
 
+	// here
+		@Override
+		protected void onResume() {
+			// TODO Auto-generated method stub
+			Intent intent = getIntent();
+			ShowLog(intent.toString());
+			to = intent.getIntExtra("to", 0);
+			
+			ShowLog("onResume>>   to..." + to);
+			if (to!=0) {
+				this.onClick(mButtons[to]);
+			}
+			super.onResume();
+		}
+		
+		//解决onResume方法中获取不到extra值得问题
+		protected void onNewIntent(Intent intent) {
+	        super.onNewIntent(intent);
+	        setIntent(intent);
+	    }
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -127,8 +159,8 @@ public class MainActivity extends BaseActivity implements OnClickListener,
 		fGarden = new GardenFragment();
 
 		mViewPager = (ViewPager) findViewById(R.id.pager);
-		mFragments = new Fragment[] { fHome, fCategory, fPerson, fCart, fGarden };
-		mViewPager.setOffscreenPageLimit(3);
+		mFragments = new BaseFragment[] { fHome, fCategory, fPerson, fCart, fGarden };
+		mViewPager.setOffscreenPageLimit(4);
 		mAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
 			@Override
 			public Fragment getItem(int position) {
@@ -138,6 +170,10 @@ public class MainActivity extends BaseActivity implements OnClickListener,
 			@Override
 			public int getCount() {
 				return mFragments.length;
+			}
+			@Override
+			public void destroyItem(ViewGroup container, int position, Object object) {            
+				//防止销毁
 			}
 		};
 		mViewPager.setAdapter(mAdapter);
@@ -153,8 +189,7 @@ public class MainActivity extends BaseActivity implements OnClickListener,
 		}
 
 		// viewPager滑动事件
-		mViewPager
-				.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+		mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 					@Override
 					public void onPageScrolled(int position,
 							float positionOffset, int positionOffsetPixels) {
@@ -167,8 +202,11 @@ public class MainActivity extends BaseActivity implements OnClickListener,
 					@Override
 					public void onPageSelected(int position) {
 						ShowLog("onPageSelected  " + position);
-						//setSelect(mViewPager.getCurrentItem());
-
+						/*for (int i = 0; i < mFragments.length; i++) {
+							if (position!=i) {
+								//mFragments[i];
+							}
+						}*/
 						setSelect(position);
 					}
 
@@ -177,7 +215,6 @@ public class MainActivity extends BaseActivity implements OnClickListener,
 	}
 
 	public void setSelect(int position) {
-		ShowLog("setSelect");
 		for (ImageButton b : mButtons) {
 			b.setSelected(false);
 		}
@@ -200,16 +237,11 @@ public class MainActivity extends BaseActivity implements OnClickListener,
 			mHeaderLayout.setOnRightImageButtonClickListener(mRightButtonSaerch);
 			break;
 		case 2:
-			ShowLog("person");
 			mHeaderLayout.setTitleAndLeftImageButton("个人中心",
 					R.drawable.base_action_bar_back_bg_selector, null,
 					baseLeftListener, 1);
-			mHeaderLayout.setRightButtonAndText(R.drawable.base_action_bar_search_selector, "");
-			mHeaderLayout.setOnRightImageButtonClickListener(mRightButtonSaerch);
-			
 			break;
 		case 3:
-			ShowLog("cart");
 			mHeaderLayout.setTitleAndLeftImageButton("购物车",
 					R.drawable.base_action_bar_back_bg_selector, null,
 					baseLeftListener, 1);
@@ -227,7 +259,6 @@ public class MainActivity extends BaseActivity implements OnClickListener,
 	}
 	public void changePage(int currentItem) {
 		// TODO Auto-generated method stub
-		ShowLog("changePage  " + currentItem);
 		mViewPager.setCurrentItem(currentItem,true);
 	}
 
@@ -277,49 +308,6 @@ public class MainActivity extends BaseActivity implements OnClickListener,
 		}
 	}
 
-	// here
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
-		intent = getIntent();
-		to = intent.getIntExtra("to", 0);
-		
-		ShowLog("onResume>>   to..." + to+"  "+intent.getStringExtra("fff")+"   "+intent.getSerializableExtra("iii")+"   ");
-		if (to!=0) {
-			this.onClick(mButtons[to]);
-		}
-	}
-
-	// homeFragment button 点击事件
-	public void homeIBClick(View arg0) {
-		// TODO Auto-generated method stub
-		playHeartbeatAnimation(arg0);
-		switch (arg0.getId()) {
-		case R.id.detail_imageButton1:
-
-			break;
-
-		case R.id.detail_imageButton2:
-
-			break;
-
-		case R.id.imageButton3:
-
-			break;
-
-		case R.id.imageButton4:
-
-			break;
-
-		case R.id.imageButton5:
-
-			break;
-
-		default:
-			break;
-		}
-	}
 
 	// categoryFragment button点击事件
 	public void iconClick(final View v) {

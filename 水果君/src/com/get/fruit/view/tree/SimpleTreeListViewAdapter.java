@@ -1,5 +1,6 @@
 package com.get.fruit.view.tree;
 
+import java.io.File;
 import java.util.List;
 
 import android.content.Context;
@@ -10,6 +11,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.get.fruit.R;
+import com.get.fruit.view.RoundAngleImageView;
 
 public class SimpleTreeListViewAdapter<T> extends TreeListViewAdapter<T>
 {
@@ -31,6 +33,8 @@ public class SimpleTreeListViewAdapter<T> extends TreeListViewAdapter<T>
 			holder = new ViewHolder();
 			holder.mIcon = (ImageView) convertView
 					.findViewById(R.id.id_item_icon);
+			holder.mImage = (RoundAngleImageView) convertView
+					.findViewById(R.id.id_item_image);
 			holder.mText = (TextView) convertView
 					.findViewById(R.id.id_item_text);
 			convertView.setTag(holder);
@@ -46,6 +50,18 @@ public class SimpleTreeListViewAdapter<T> extends TreeListViewAdapter<T>
 			holder.mIcon.setVisibility(View.VISIBLE);
 			holder.mIcon.setImageResource(node.getIcon());
 		}
+		if (node.getImage() == -1&& null==node.getFile())
+		{
+			holder.mImage.setVisibility(View.GONE);
+		} else
+		{
+			holder.mImage.setVisibility(View.VISIBLE);
+			if (node.getImage()!=-1) {
+				holder.mImage.setImageResource(node.getImage());
+			}else {
+				node.getFile().loadImageThumbnail(mContext, holder.mImage, holder.mImage.getWidth(), holder.mImage.getHeight());
+			}
+		}
 
 		holder.mText.setText(node.getName());
 
@@ -55,6 +71,7 @@ public class SimpleTreeListViewAdapter<T> extends TreeListViewAdapter<T>
 	private class ViewHolder
 	{
 		ImageView mIcon;
+		RoundAngleImageView mImage;
 		TextView mText;
 	}
 

@@ -3,6 +3,11 @@ package com.get.fruit.view.tree;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.bmob.v3.datatype.BmobFile;
+
+import android.R.integer;
+import android.media.Image;
+
 public class Node
 {
 	public Node()
@@ -15,6 +20,14 @@ public class Node
 		this.pId = pId;
 		this.name = name;
 	}
+	public Node(int id, int pId, String name,int image ,BmobFile file)
+	{
+		this.id = id;
+		this.pId = pId;
+		this.name = name;
+		this.image=image;
+		this.file=file;
+	}
 
 
 
@@ -24,12 +37,14 @@ public class Node
 	 */
 	private int pId = 0;
 	private String name;
+	private int image;
+	private BmobFile file;
 	/**
 	 * 树的层级
 	 */
 	private int level;
 	/**
-	 * 是否是展�?
+	 * 是否是展�?
 	 */
 	private boolean isExpand = false;
 	private int icon;
@@ -97,6 +112,24 @@ public class Node
 		this.children = children;
 	}
 
+	
+	
+	public BmobFile getFile() {
+		return file;
+	}
+
+	public void setFile(BmobFile file) {
+		this.file = file;
+	}
+
+	public int getImage() {
+		return image;
+	}
+
+	public void setImage(int image) {
+		this.image = image;
+	}
+
 	/**
 	 * 属否是根节点
 	 * 
@@ -108,7 +141,7 @@ public class Node
 	}
 
 	/**
-	 * 判断当前父节点的收缩状�??
+	 * 判断当前父节点的收缩状�??
 	 * 
 	 * @return
 	 */
@@ -120,7 +153,7 @@ public class Node
 	}
 
 	/**
-	 * 是否是叶子节�?
+	 * 是否是叶子节�?
 	 * 
 	 * @return
 	 */
@@ -130,7 +163,7 @@ public class Node
 	}
 
 	/**
-	 * 得到当前节点的层�?
+	 * 得到当前节点的层�?
 	 * @return
 	 */
 	public int getLevel()
@@ -168,7 +201,7 @@ public class Node
 	{
 		return "Node [id=" + id + ", pId=" + pId + ", name=" + name
 				+ ", level=" + level + ", isExpand=" + isExpand + ", icon="
-				+ icon + "]";
+				+ icon + "]\n";
 	}
 
 }

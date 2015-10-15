@@ -75,6 +75,7 @@ public class ListFruitsActivity extends BaseActivity {
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		intent=getIntent();
+		ShowLog(intent.toString());
 		searchBy=intent.getStringExtra("searchBy");
 		searchValue=intent.getStringExtra("searchValue");
 		keyWord=intent.getStringExtra("keyWord");
@@ -107,7 +108,8 @@ public class ListFruitsActivity extends BaseActivity {
 				// TODO Auto-generated method stub
 				Intent intent =new Intent(ListFruitsActivity.this, MainActivity.class);
 				intent.putExtra("to", 2);
-				startAnimActivity(intent);
+				ShowLog("intent.putExtra('to', 2)....");
+				startActivity(intent);
 			}
 		},1);
 	
@@ -205,7 +207,10 @@ public class ListFruitsActivity extends BaseActivity {
 					@Override
 					public void onClick(final View arg0) {
 						// TODO Auto-generated method stub
-						
+						if (null==me) {
+							ShowToast("你尚未登录");
+							return;
+						}
 						if (addto.getText().equals("查看购物车")) {
 							startAnimActivityToFragment(MainActivity.class, 3);
 						}else{
@@ -235,7 +240,6 @@ public class ListFruitsActivity extends BaseActivity {
 	
 				});
 					
-				
 				helper.setOnClickListener(R.id.list_item_image, new OnClickListener() {
 					
 					@Override
@@ -243,7 +247,7 @@ public class ListFruitsActivity extends BaseActivity {
 						// TODO Auto-generated method stub
 						Intent intent=new Intent(ListFruitsActivity.this,DetailActivity.class);	
 						intent.putExtra("fruit", item);
-						startAnimActivity(intent);
+						startActivity(intent);
 					}
 				});
 			}

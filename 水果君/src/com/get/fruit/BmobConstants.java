@@ -13,17 +13,9 @@ import android.os.Environment;
 @SuppressLint("SdCardPath")
 public class BmobConstants {
 
-	/**
-	 * 存放发送图片的目录
-	 */
-	public static String BMOB_PICTURE_PATH = Environment.getExternalStorageDirectory()	+ "/bmobimdemo/image/";
-	
-	/**
-	 * 我的头像保存目录
-	 */
 	public static String MyAvatarDir = "/sdcard/水果君/me/";
 	public static String MyFruitDir = "/sdcard/水果君/fruit/";
-	public static String MyTempDir = "/sdcard/水果君/temp/";
+	public static String MyTempDir = "/sdcard/水果君/ad/";
 	/**
 	 * 拍照回调
 	 */

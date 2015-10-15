@@ -1,51 +1,53 @@
 package com.get.fruit.bean;
 
+import android.R.string;
 import cn.bmob.v3.BmobObject;
 
 public class Order extends BmobObject {
 
-	
-    public Order() {
-		super();
-	}
-
-
-    
-    public Order(User user, Fruit fruit, Integer count) {
+    public Order(User user, Fruit fruit, Integer count, double sum) {
 		super();
 		this.user = user;
 		this.fruit = fruit;
 		this.count = count;
+		this.sum=sum;
 	}
 
 
 
-	//private List<Fruit> fruits;//一单多果
-    private User user;
+    /**
+	 * 
+	 */
+	public Order() {
+		super();
+	}
+
+
+
+	private User user;
     private Fruit fruit;
     private Integer count;
     private State state;//订单状态
     private SendWay sendway;//派送方式
     private Double sum;//金额
     private Boolean pay;//是否支付
-    private UserAdress consignee;//收货人
+    
+    //private UserAdress consignee;//收货人
+    private String name;//收货人姓名
+    private String phone;
+    private String address;
+    
     private String messenger;//留言
     private String orderid;
     
     public  enum State{
     	
-    	正在下单,等待支付,支付失败,等待发货,已发货,交易完成,交易关闭
+    	正在下单,等待支付,等待发货,交易完成,交易关闭
     }
     
     public enum SendWay{
     	送货上门,自取,快递
     }
-    public enum PayWay{
-    	支付宝,微信支付
-    }
-    
-    
-    
 	public Integer getCount() {
 		return count;
 	}
@@ -94,12 +96,43 @@ public class Order extends BmobObject {
 	public void setPay(Boolean pay) {
 		this.pay = pay;
 	}
-	public UserAdress getConsignee() {
-		return consignee;
+	
+	public String getName() {
+		return name;
 	}
-	public void setConsignee(UserAdress consignee) {
-		this.consignee = consignee;
+
+
+
+	public void setName(String name) {
+		this.name = name;
 	}
+
+
+
+	public String getPhone() {
+		return phone;
+	}
+
+
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+
+
+	public String getAddress() {
+		return address;
+	}
+
+
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+
+
 	public String getMessenger() {
 		return messenger;
 	}

@@ -16,8 +16,8 @@ import com.get.fruit.view.citypicker.CityPicker.OnSelectingListener;
 public class LocationActivity extends BaseActivity {
 	private CityPicker mCityPicker;
 	private TextView selectedAddress;
-	private String fullAddress;
-	private String address;
+	private String fullAddress="";
+	private String address="";
     Intent intent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +30,9 @@ public class LocationActivity extends BaseActivity {
 			@Override
 			public void onClick() {
 				// TODO Auto-generated method stub
-				address=fullAddress.split("-")[2];
+				if (fullAddress!="") {
+					address=fullAddress.split("-")[2];
+				}
 				if(address.equals("市辖区")||address.equals("县")||address.equals(fullAddress.split("-")[1])){
 					ShowToast("请选择准确地址");
 					return;

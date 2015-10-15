@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -36,17 +37,19 @@ import com.bmob.BmobProFile;
 import com.bmob.btp.callback.UploadListener;
 import com.get.fruit.BmobConstants;
 import com.get.fruit.R;
-import com.get.fruit.activity.AddFruitActivity;
 import com.get.fruit.activity.BaseFragment;
 import com.get.fruit.activity.CollectionActivity;
 import com.get.fruit.activity.HarvestActivity;
 import com.get.fruit.activity.LocationActivity;
+import com.get.fruit.activity.LoginActivity;
 import com.get.fruit.activity.MessengerActivity;
 import com.get.fruit.activity.OrderListActivity;
+import com.get.fruit.activity.SettingsActivity;
 import com.get.fruit.bean.User;
 import com.get.fruit.util.ImageLoadOptions;
 import com.get.fruit.util.PhotoUtil;
 import com.get.fruit.util.StringUtils;
+import com.get.fruit.view.HeaderLayout.onRightImageButtonClickListener;
 import com.get.fruit.view.RoundAngleImageView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -55,7 +58,8 @@ public class PersonFragment extends BaseFragment implements OnClickListener{
 	private List<TextView> views;
 	private TextView nickname;
 	private RoundAngleImageView avatar;
-	
+	private onRightImageButtonClickListener mRightImageButtonClickListener=null;
+	private FragmentCallBack callBack;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -74,6 +78,37 @@ public class PersonFragment extends BaseFragment implements OnClickListener{
 		// TODO Auto-generated method stub
 		super.onActivityCreated(savedInstanceState);
 		initView();
+	}
+
+	//设置删除按钮
+	@Override
+	public void onAttach(Activity activity) {
+		// TODO Auto-generated method stub
+		ShowLog("attach.....cart");
+		callBack=(FragmentCallBack) activity;
+		super.onAttach(activity);
+	}
+	
+	/** 
+	* @Title: setRightButtonListener 
+	* @Description: TODO
+	* @param 
+	* @return void
+	* @throws 
+	*/
+	private void setRightButtonListener() {
+		ShowLog("setRightButtonListener......");
+		if (mRightImageButtonClickListener==null) {
+			mRightImageButtonClickListener=new onRightImageButtonClickListener() {
+				@Override
+				public void onClick() {
+					me.logOut(getActivity());
+					startAnimActivity(LoginActivity.class);
+					getActivity().finish();
+				}
+			};
+		}
+		callBack.getHeaderLayout().setTitleAndRightButton("个人中心",-1,"注销", mRightImageButtonClickListener);
 	}
 
 	
@@ -99,6 +134,16 @@ public class PersonFragment extends BaseFragment implements OnClickListener{
 		views.add((TextView) findViewById(R.id.textView9));
 		views.add((TextView) findViewById(R.id.textView10));
 		
+	}
+
+	/** 
+	* @Title: initEvent 
+	* @Description: TODO
+	* @param 
+	* @return void
+	* @throws 
+	*/
+	private void initEvent() {
 		for (int i = 0; i <views.size(); i++) {
 			views.get(i).setOnClickListener(this);
 		}
@@ -106,15 +151,19 @@ public class PersonFragment extends BaseFragment implements OnClickListener{
 		nickname=((TextView) findViewById(R.id.textView11));
 		avatar=(RoundAngleImageView)findViewById(R.id.roundAngleImageView1);
 		avatar.setOnClickListener(this);
-
 	}
 
 	@Override
-	protected void onVisible() {
+	protected void lazyLoad() {
 		// TODO Auto-generated method stub
-		super.onVisible();
-		nickname.setText(me.getUsername());
-		setAvatar();
+		if (null==me) {
+			popSelection();
+		}else {
+			setRightButtonListener();
+			initEvent();
+			nickname.setText(me.getNick());
+			setAvatar();
+		}
 	}
 	
 	public void setAvatar() {
@@ -129,9 +178,6 @@ public class PersonFragment extends BaseFragment implements OnClickListener{
 		
 	}
 	
-	
-
-
 
 	@Override
 	public void onClick(View v) {
@@ -141,15 +187,17 @@ public class PersonFragment extends BaseFragment implements OnClickListener{
 			showAvatarPop();
 			break;
 		case R.id.textView1:
-			startAnimActivity(AddFruitActivity.class);
+			startAnimActivity(SettingsActivity.class);
 			break;
 		case R.id.textView2:
+			ShowToast("稍后开通");
 			startAnimActivity(MessengerActivity.class);
 			break;
 		case R.id.textView3:
 			startAnimActivity(OrderListActivity.class);
 			break;
 		case R.id.textView4:
+			ShowToast("稍后开通");
 			startAnimActivity(HarvestActivity.class);
 			break;
 		case R.id.textView5:
@@ -185,7 +233,7 @@ public class PersonFragment extends BaseFragment implements OnClickListener{
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				// TODO Auto-generated method stub
-				String inputName = inputServer.getText().toString();
+				final String inputName = inputServer.getText().toString();
 				if (StringUtils.isEmpty(inputName)) {
         			ShowToast("不能为空");
 					return;
@@ -196,13 +244,14 @@ public class PersonFragment extends BaseFragment implements OnClickListener{
 					return;
 				}
 				User user=new User();
-				user.setUsername(inputName);
+				user.setNick(inputName);
 				updateUserData(user, new UpdateListener() {
 					
 					@Override
 					public void onSuccess() {
 						// TODO Auto-generated method stub
-						nickname.setText(me.getUsername());
+						nickname.setText(me.getNick());
+						ShowToast(inputName);
 					}
 					
 					@Override
@@ -282,7 +331,7 @@ public class PersonFragment extends BaseFragment implements OnClickListener{
 					@Override
 					public void onSuccess() {
 						// TODO Auto-generated method stub
-						nickname.setText(me.getUsername());
+						nickname.setText(me.getNick());
 					}
 					
 					@Override
@@ -552,14 +601,5 @@ public class PersonFragment extends BaseFragment implements OnClickListener{
 		user.update(getActivity(), listener);
 	}
 
-	
-	/* (non-Javadoc)
-	 * @see android.support.v4.app.Fragment#onResume()
-	 */
-	@Override
-	public void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
-	}
 	
 }

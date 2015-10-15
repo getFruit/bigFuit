@@ -36,8 +36,8 @@ public class OrderListActivity extends BaseActivity {
 	private PagerSlidingTabStrip mPagerSlidingTabStrip;
 	private ViewPager mViewPager;
 	private static int current=0;
-	private static int tabcount=4;
-	private static String[] tabNames={"待收货","待发货","待付款","所有"};
+	private static int tabcount=3;
+	private static String[] tabNames={"待付款","待收货","所有"};
 	private List<PagerSlidingTabStripFragment> fragments;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +74,12 @@ public class OrderListActivity extends BaseActivity {
 			public CharSequence getPageTitle(int position) {
 				return tabNames[position];
 			}
+			
+			@Override
+			public void destroyItem(ViewGroup container, int position, Object object) {            
+				//防止销毁
+			}
+
 		});
 	}
 	
@@ -109,16 +115,11 @@ public class OrderListActivity extends BaseActivity {
 			position=getArguments().getInt("position",0);
 			initView();
 			inited=true;
-		}
-
-		@Override
-		protected void onInvisible() {
-			// TODO Auto-generated method stub
-			super.onInvisible();
-			if (!loaded&&inited) {
-				mListView.pullRefreshing();
+			if (position==0) {
+				query();
 			}
 		}
+
 		/** 
 		* @Title: initView 
 		* @Description: TODO
@@ -136,12 +137,11 @@ public class OrderListActivity extends BaseActivity {
 				protected void convert(final BaseAdapterHelper helper, final Order item) {
 					// TODO Auto-generated method stub
 					helper.setText(R.id.list_item_name, item.getFruit().getName());
-					helper.setText(R.id.list_item_describe, item.getFruit().getDescribe());
+					helper.setText(R.id.list_item_functions, item.getCreatedAt());
 					helper.setText(R.id.list_item_price, "￥ "+item.getFruit().getPrice());
 					if (item.getFruit().getPicture()!=null) {
 						helper.setImageBitmapFromBmobFile(R.id.list_item_image, item.getFruit().getPicture());
 					}
-					
 					final Button addto=helper.getView(R.id.list_addto);
 					switch (item.getState()) {
 					case 等待支付:
@@ -156,44 +156,34 @@ public class OrderListActivity extends BaseActivity {
 						});
 						break;
 					case 等待发货:
-						addto.setText("取消订单");
-						addto.setOnClickListener(new OnClickListener() {
+						if (item.getPay()) {
+							addto.setText("确认收货");
+							Order order=new Order();
+							order.setState(Order.State.交易完成);
+							order.update(getActivity(), item.getObjectId(), new UpdateListener() {
+								
+								@Override
+								public void onSuccess() {
+									mQuickAdapter.remove(item);
+								}
+								
+								@Override
+								public void onFailure(int arg0, String arg1) {
+									ShowLog("稍后再试："+arg1);
+								}
+							});
 							
-							@Override
-							public void onClick(View v) {
-								// TODO Auto-generated method stub
-								startAnimActivityWithData(CancelActivity.class,"order",item);
-							}
-						});
-						break;
-					case 已发货:
-						addto.setText("确认收货");
-						Order order=new Order();
-						order.setState(Order.State.交易完成);
-						order.update(getActivity(), item.getObjectId(), new UpdateListener() {
-							
-							@Override
-							public void onSuccess() {
-								mQuickAdapter.remove(item);
-							}
-							
-							@Override
-							public void onFailure(int arg0, String arg1) {
-								// TODO Auto-generated method stub
-								ShowLog("稍后再试："+arg1);
-							}
-						});
-						break;
-					case 支付失败:
-						addto.setText("重新支付");
-						addto.setOnClickListener(new OnClickListener() {
-							
-							@Override
-							public void onClick(View v) {
-								// TODO Auto-generated method stub
-								startAnimActivityWithData(PayActivity.class,"order",item);
-							}
-						});
+						}else {
+							addto.setText("在线支付");
+							addto.setOnClickListener(new OnClickListener() {
+								
+								@Override
+								public void onClick(View v) {
+									// TODO Auto-generated method stub
+									startAnimActivityWithData(PayActivity.class,"order",item);
+								}
+							});
+						}
 						break;
 
 					default:
@@ -209,7 +199,7 @@ public class OrderListActivity extends BaseActivity {
 							@Override
 							public void onFailure(int arg0, String arg1) {
 								// TODO Auto-generated method stub
-								ShowLog("删除失败："+arg1);
+								ShowToast("删除失败："+arg1);
 								
 							}
 						});
@@ -224,7 +214,7 @@ public class OrderListActivity extends BaseActivity {
 						public void onClick(View arg0) {
 							// TODO Auto-generated method stub
 							Intent intent=new Intent(getActivity(),DetailActivity.class);	
-							intent.putExtra("fruit", item);
+							intent.putExtra("fruit", item.getFruit());
 							startAnimActivity(intent);
 						}
 					});
@@ -240,6 +230,7 @@ public class OrderListActivity extends BaseActivity {
 				public void onRefresh() {
 					// TODO Auto-generated method stub
 					ShowLog("onRefresh...");
+					setEmptyView(null);
 					query();
 				}
 				
@@ -247,6 +238,7 @@ public class OrderListActivity extends BaseActivity {
 				public void onLoadMore() {
 					// TODO Auto-generated method stub
 					ShowLog("onLoadMore...");
+					setEmptyView(null);
 					query();
 				}
 
@@ -287,21 +279,16 @@ public class OrderListActivity extends BaseActivity {
 		
 		
 		private void query() {
-			// TODO Auto-generated method stub
 			BmobQuery<Order> query=new BmobQuery<Order>();
 			query.addWhereEqualTo("user", me.getObjectId());
+			query.include("fruit");
 			query.order("createdAt");
 			switch (position) {
 			case 0:
-				query.addWhereEqualTo("State", Order.State.已发货);
+				query.addWhereEqualTo("state", Order.State.等待支付.toString());
 				break;
 			case 1:
-				query.addWhereEqualTo("State", Order.State.等待发货);
-				break;
-			case 2:
-				query.addWhereEqualTo("State", Order.State.等待支付);
-				break;
-			case 3:
+				query.addWhereEqualTo("state", Order.State.等待发货.toString());
 				break;
 			default:
 				break;
@@ -329,7 +316,19 @@ public class OrderListActivity extends BaseActivity {
 					stopRefresh();
 				}
 			});
-			
+			loaded=true;
 		}
+
+		@Override
+		protected void lazyLoad() {
+			ShowLog(String.valueOf(loaded)+String.valueOf(inited));
+			if (!loaded&&inited) {
+				query();
+				emptyView.setVisibility(View.GONE);
+				mListView.pullRefreshing();
+				
+			}
+		}
+		
 	}
 }

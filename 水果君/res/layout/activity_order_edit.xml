@@ -120,6 +120,7 @@
                         android:textColor="@color/text_color_gray"
                         android:textSize="14sp" />
 
+                        <!--送货方式不可选 android:onClick="send_method" -->
                     <TextView
                         android:id="@+id/order_edit_method"
                         android:layout_width="140dp"
@@ -128,7 +129,6 @@
                         android:layout_marginLeft="0dp"
                         android:layout_marginStart="20dp"
                         android:clickable="true"
-                        android:onClick="send_method"
                         android:text="@string/order_edit_method1"
                         android:textColor="@color/text_color_gray"
                         android:textSize="14sp" />
@@ -311,7 +311,7 @@
     
     
     
-        <RelativeLayout 
+   <RelativeLayout 
 	    android:id="@+id/pay"
 	    android:visibility="gone"
 	    android:layout_width="match_parent"
@@ -344,7 +344,7 @@
 	        android:layout_height="wrap_content"
 	        android:layout_below="@+id/price"
 	        android:layout_centerHorizontal="true"
-	        android:layout_marginTop="40dp"
+	        android:layout_marginTop="20dp"
 	        android:drawableTop="@drawable/pay3"
 	        android:gravity="center"
 	        android:text="货到付款" />
@@ -355,9 +355,9 @@
 	        android:layout_height="wrap_content"
 	        android:layout_centerHorizontal="true"
 	        android:layout_below="@+id/pay1"
-	        android:layout_marginTop="36dp"
+	        android:layout_marginTop="26dp"
 	        android:background="@color/base_color_blue"
-	        android:text="稍后支付"
+	        android:text="删除订单"
 	        android:textColor="@color/base_color_white"
 	        android:textSize="22sp" />
 	
@@ -371,14 +371,13 @@
 	        android:drawableTop="@drawable/pay2"
 	        android:gravity="center"
 	        android:text="微信支付" />
-	
+
 	    <TextView
 	        android:id="@+id/pay1"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_below="@+id/pay3"
-	        android:layout_marginRight="15dp"
-	        android:layout_marginTop="27dp"
+	        android:layout_marginTop="12dp"
 	        android:layout_toLeftOf="@+id/pay3"
 	        android:drawableTop="@drawable/pay1"
 	        android:gravity="center"

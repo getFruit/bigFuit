@@ -30,10 +30,8 @@ import com.get.fruit.activity.OrderEditActivity;
 import com.get.fruit.adapter.util.BaseAdapterHelper;
 import com.get.fruit.adapter.util.QuickAdapter;
 import com.get.fruit.bean.CartItem;
-import com.get.fruit.bean.Fruit;
 import com.get.fruit.bean.Order;
 import com.get.fruit.util.CollectionUtils;
-import com.get.fruit.view.HeaderLayout;
 import com.get.fruit.view.HeaderLayout.onRightImageButtonClickListener;
 import com.get.fruit.view.listview.XListView;
 import com.get.fruit.view.listview.XListView.IXListViewListener;
@@ -41,7 +39,7 @@ import com.get.fruit.view.listview.XListView.IXListViewListener;
 public class CartFragment extends BaseFragment {
 	static boolean inited=false;
 	static boolean loaded=false;
-	private CartCallBack callBack;
+	private FragmentCallBack callBack;
 	private Button gopay;
 	private CheckBox checkAll;
 	private TextView totalPrice;
@@ -69,7 +67,6 @@ public class CartFragment extends BaseFragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onActivityCreated(savedInstanceState);
-		initView();
 	}
 	
 	
@@ -167,17 +164,14 @@ public class CartFragment extends BaseFragment {
 				// TODO Auto-generated method stub
 				if(CollectionUtils.isNotNull(arg0)){
 					emptyView.setVisibility(View.GONE);
-					allItems.clear();
 					allItems=arg0;
-					mQuickAdapter.clear();
-					mQuickAdapter.addAll(allItems);
+					mQuickAdapter.replaceAll(allItems);
 					loaded=true;
 					
 				}else {
 					emptyView.setVisibility(View.VISIBLE);
 					emptyView.setText("¹ºÎï³µ¿Õ¿ÕµÄ");
 				}
-				arg0.clear();
 				stopRefresh();
 				
 			}
@@ -234,7 +228,7 @@ public class CartFragment extends BaseFragment {
 				for (Integer i:checkedItems) {
 					CartItem c=allItems.remove((int)i);
 					cartItems.add(c);
-					Order order=new Order(me,c.getFruit(),c.getCount());
+					Order order=new Order(me,c.getFruit(),c.getCount(),c.getCount()*c.getFruit().getPrice());
 					items.add(order);
 				}
 				checkedItems.clear();
@@ -249,7 +243,7 @@ public class CartFragment extends BaseFragment {
 	}
 
 	public void setTotal() {
-		ShowLog("setTotal");
+		ShowLog("setTotal: all="+allItems.size()+"  checkde="+checkedItems.size());
 		float total = 0;
 		if (checkedItems.size()!=0) {
 			CartItem item;
@@ -388,57 +382,30 @@ public class CartFragment extends BaseFragment {
 	public void onAttach(Activity activity) {
 		// TODO Auto-generated method stub
 		ShowLog("attach.....cart");
-		callBack=(CartCallBack) activity;
+		callBack=(FragmentCallBack) activity;
 		super.onAttach(activity);
 	}
 	
 	
-	public interface CartCallBack{
-		public HeaderLayout getHeaderLayout();
-	}
-
-
-	
-	
-	static boolean isVisible=false;
 	@Override
-	protected void onVisible() {
-		isVisible=true;
+	protected void lazyLoad() {
 		ShowLog("onVisible....cart");
-
-		setRightButtonListener();
-		if (inited && !loaded) {
-			mListView.pullRefreshing();
-			if (!isNetConnected()) {
-				emptyView.setText(R.string.network_tips);
-				stopRefresh();
-			}else {
-				loadData();
+		
+		if (null==me) {
+			popSelection();
+		}else {
+			initView();
+			setRightButtonListener();
+			if (inited && !loaded) {
+				mListView.pullRefreshing();
+				if (!isNetConnected()) {
+					emptyView.setText(R.string.network_tips);
+					stopRefresh();
+				}else {
+					loadData();
+				}
 			}
 		}
 	}
-	
-	@Override
-	protected void onInvisible() {
-		isVisible=false;
-	}
-
-	
-	/*static boolean first=true;
-	@Override
-	public void onStart() {
-		// TODO Auto-generated method stub
-		ShowLog("onstart.....");
-		if (loaded&&!first) {
-			
-			ShowLog("onstart.....setRightButtonListener");
-			setRightButtonListener();
-		}
-		first=false;
-		super.onStart();
-		
-	}*/
-	
-
 	
 }

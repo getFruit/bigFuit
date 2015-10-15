@@ -6,6 +6,8 @@ import java.util.List;
 
 import android.util.Log;
 
+import cn.bmob.v3.datatype.BmobFile;
+
 import com.get.fruit.R;
 
 public class TreeHelper
@@ -28,6 +30,8 @@ public class TreeHelper
 			int id = -1;
 			int pid = -1;
 			String label = null;
+			int image = -1;
+			BmobFile file = null;
 
 			node = new Node();
 			Class clazz = t.getClass();
@@ -49,8 +53,18 @@ public class TreeHelper
 					field.setAccessible(true);
 					label = (String) field.get(t);
 				}
+				if (field.getAnnotation(TreeNodeImage.class) != null)
+				{
+					field.setAccessible(true);
+					image = (int) field.get(t);
+				}
+				if (field.getAnnotation(TreeNodeImageFromBmobFile.class) != null)
+				{
+					field.setAccessible(true);
+					file = (BmobFile) field.get(t);
+				}
 			}
-			node = new Node(id, pid, label);
+			node = new Node(id, pid, label,image,file);
 			nodes.add(node);
 		}// for end
 		
@@ -85,6 +99,7 @@ public class TreeHelper
 		}
 		return nodes;
 	}
+
 
 	public static <T> List<Node> getSortedNodes(List<T> datas,
 			int defaultExpandLevel) throws IllegalArgumentException,

@@ -30,6 +30,7 @@ import cn.bmob.social.share.core.data.ShareData;
 import cn.bmob.social.share.view.BMShare;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.datatype.BmobRelation;
+import cn.bmob.v3.listener.CountListener;
 import cn.bmob.v3.listener.FindStatisticsListener;
 import cn.bmob.v3.listener.GetListener;
 import cn.bmob.v3.listener.SaveListener;
@@ -122,6 +123,7 @@ public class DetailActivity extends BaseActivity {
 	*/
 	private void initPicViewer() {
 		mViewPager = (MyViewPager) findViewById(R.id.detail_imageSwitcher1);
+		//切换效果
         //mViewPager.setPageTransformer(true, new DepthPageTransformer());
         mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
         //mViewPager.setPageTransformer(true, new RotatePageDownTransformer());
@@ -205,6 +207,10 @@ public class DetailActivity extends BaseActivity {
 			
 			@Override
 			public void onClick(View v) {
+				if (null==me) {
+					ShowToast("你尚未登录");
+					return;
+				}
 				// TODO Auto-generated method stub
 				if (addtocart.getText().equals("查看购物车")) {
 					startAnimActivityToFragment(MainActivity.class, 3);
@@ -247,8 +253,11 @@ public class DetailActivity extends BaseActivity {
 		Intent intent=getIntent();
 		fruit=(Fruit) intent.getSerializableExtra("fruit");
 		if (fruit!=null) {
-			setView();
-			//query(fruit);
+			if (null!=fruit.getName()) {
+				setView();
+			}else {
+				query(fruit);
+			}
 		}
 		super.onResume();
 	}
@@ -282,23 +291,27 @@ public class DetailActivity extends BaseActivity {
 			}
 		});
 		
-		BmobQuery<CartItem> query2=new BmobQuery<CartItem>();
-		query2.addWhereEqualTo("fruit", fruit.getObjectId());
-		query2.addWhereEqualTo("mine", me.getObjectId());
-		query2.findStatistics(this, CartItem.class, new FindStatisticsListener() {
-			
-			@Override
-			public void onSuccess(Object arg0) {
-				// TODO Auto-generated method stub
+		if (null==me) {
+			addtocart.setText("加入购物车");
+		}else {
+			BmobQuery<CartItem> query2=new BmobQuery<CartItem>();
+			query2.addWhereEqualTo("fruit", fruit.getObjectId());
+			query2.addWhereEqualTo("mine", me.getObjectId());
+			query2.count(DetailActivity.this, CartItem.class, new CountListener() {
 				
-			}
-			
-			@Override
-			public void onFailure(int arg0, String arg1) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+				@Override
+				public void onFailure(int arg0, String arg1) {
+					ShowLog(arg0+arg1);
+				}
+				@Override
+				public void onSuccess(int arg0) {
+					// TODO Auto-generated method stub
+					if (arg0>0) {
+						addtocart.setText("查看购物车");
+					}
+				}
+			});
+		}
 	}
 
 	//下载图片
@@ -349,13 +362,17 @@ public class DetailActivity extends BaseActivity {
 			
 			boolean collected=false;
 			@Override
-			public void onClick(final View arg0) {
+			public void onClick(final View v) {
 				// TODO Auto-generated method stub
-				switch (arg0.getId()) {
+				switch (v.getId()) {
 				case R.id.comment:
-					
+					ShowToast("暂无评论功能");
 					break;
 				case R.id.collect:
+					if (null==me) {
+						ShowToast("你尚未登录");
+						return;
+					}
 					if (fruit==null) {
 						return;
 					}
@@ -365,21 +382,25 @@ public class DetailActivity extends BaseActivity {
 					BmobRelation relation = new BmobRelation();
 					User user=new User();
 					user.setObjectId(me.getObjectId());
-					relation.add(user);
+					if (collected) {
+						relation.remove(user);
+					}else {
+						relation.add(user);
+					}
 					temp.setLikes(relation);
 					temp.update(DetailActivity.this, new UpdateListener() {
-
-					    @Override
-					    public void onSuccess() {
-					    	arg0.setSelected(!collected);
+						
+						@Override
+						public void onSuccess() {
+							v.setSelected(!collected);
 							collected=!collected;
-					    }
-
-					    @Override
-					    public void onFailure(int arg0, String arg1) {
-					        // TODO Auto-generated method stub
-					        ShowToast("收藏失败");
-					    }
+						}
+						
+						@Override
+						public void onFailure(int arg0, String arg1) {
+							// TODO Auto-generated method stub
+							ShowToast("操作失败："+arg1);
+						}
 					});
 					break;
 				case R.id.share:

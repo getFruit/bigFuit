@@ -1,13 +1,21 @@
 package com.get.fruit.activity.fragment;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import android.annotation.SuppressLint;
-import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Parcelable;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.LayoutParams;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -17,13 +25,15 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
+import android.widget.TextView;
 import android.widget.ViewSwitcher.ViewFactory;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobQuery.CachePolicy;
 import cn.bmob.v3.listener.FindListener;
 
-import com.bmob.BmobProFile;
-import com.bmob.btp.callback.DownloadListener;
+import com.get.fruit.App;
+import com.get.fruit.BmobConstants;
 import com.get.fruit.R;
 import com.get.fruit.activity.BaseFragment;
 import com.get.fruit.activity.DetailActivity;
@@ -35,28 +45,30 @@ import com.get.fruit.util.TimeUtil;
 import com.get.fruit.view.MyGridView;
 import com.get.fruit.view.MyImageSwitcher;
 import com.get.fruit.view.Rotate3D;
+import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 
 public class HomeFragment extends BaseFragment{
 	static int adnum=4;//轮播光告数
 	static int ad2num=6;//首页广告数
-	static  long casheage=TimeUtil.DAY*3;
+	static  long casheage=TimeUtil.DAY*7;
 	
-	List<Drawable> adpics=new ArrayList<Drawable>();
-	ImageView[] views = new ImageView[4];
+	List<HomeAD> ads=new ArrayList<HomeAD>();
 	MyImageSwitcher imswitcher;
 	GestureDetector mGestureDetector;
-	List<HomeAD> ads=new ArrayList<HomeAD>();
 	int i=0;
-	Runnable r;
-	
 	private MyGridView mGridView;
 	private QuickAdapter<HomeAD> mAdapter;
-	private HomeAD[] dataAds;
+	
 	List<String> urls=new ArrayList<>();
 	int[] res = new int[]{R.drawable.a,R.drawable.bb,R.drawable.cc,R.drawable.aa};
 	
 	
-	ImageView imageView;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -74,13 +86,9 @@ public class HomeFragment extends BaseFragment{
 	public void onActivityCreated(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onActivityCreated(savedInstanceState);
-		imageView=(ImageView) findViewById(R.id.imageView1);
 		initView();
-		loadData();
-		loadData2();
 	}
 
-	
 
 	/** 
 	* @Title: initView 
@@ -90,33 +98,9 @@ public class HomeFragment extends BaseFragment{
 	* @throws 
 	*/
 	private void initView() {
-		initImageSwitcher();
-		
 		initGridView();
-		
-		initButtons();
 	}
 
-	/** 
-	* @Title: initButtons 
-	* @Description: TODO
-	* @param 
-	* @return void
-	* @throws 
-	*/
-	private void initButtons() {
-		// TODO Auto-generated method stub
-		//按钮
-				ImageView v1 = (ImageView) findViewById(R.id.View1);
-				ImageView v2 = (ImageView) findViewById(R.id.View2);
-				ImageView v3 = (ImageView) findViewById(R.id.View3);
-				ImageView v4 = (ImageView) findViewById(R.id.View4);
-				views[0]=v1;
-				views[1]=v2;
-				views[2]=v3;
-				views[3]=v4;
-				views[0].setSelected(true);
-	}
 
 	public void initGridView() {
 		//gridview
@@ -142,48 +126,9 @@ public class HomeFragment extends BaseFragment{
 		mGridView.setAdapter(mAdapter);
 	}
 
-	public void initImageSwitcher() {
-		//轮播图
-		imswitcher = (MyImageSwitcher) findViewById(R.id.detail_imageSwitcher1);
-		imswitcher.setFactory(new ViewFactory()
-		{
-			@Override
-			public View makeView()
-			{
-				ImageView imageView = new ImageView(getActivity());
-				imageView.setBackgroundColor(0xff0000);
-				imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-				imageView.setLayoutParams(new ImageSwitcher.LayoutParams(
-					LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-				return imageView;
-			}
-		});
-		imswitcher.setImageResource(R.drawable.a);
-		mGestureDetector = new GestureDetector(getActivity(), new MyGestureListener());
-
-		
-		//启动轮播事件监听
-		imswitcher.setOnTouchListener(new OnTouchListener() {
-		
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				// TODO Auto-generated method stub
-				imswitcher.getParent().requestDisallowInterceptTouchEvent(true);
-				 mGestureDetector.onTouchEvent(event);  
-				return true;
-			}
-		});
-		//启动轮播
-		DownloadTask dTask = new DownloadTask();   
-		dTask.execute(100);
-	
-		
-	}
-	
-	
 	/** 
 	* @Title: loadData 
-	* @Description: TODO
+	* @Description: TODO下载广告1
 	* @param 
 	* @return void
 	* @throws 
@@ -191,11 +136,17 @@ public class HomeFragment extends BaseFragment{
 	private void loadData() {
 		// TODO Auto-generated method stub
 		BmobQuery< HomeAD> query=new BmobQuery<HomeAD>();
-		query.setMaxCacheAge(casheage);
 		query.addWhereEqualTo("top", true);
 		query.setLimit(adnum);
-		query.include("fruit");
-		query.setCachePolicy(CachePolicy.NETWORK_ELSE_CACHE);
+		query.setMaxCacheAge(casheage);
+		if (isNetConnected()) {
+			query.setCachePolicy(CachePolicy.NETWORK_ELSE_CACHE);
+		}else if (query.hasCachedResult(getActivity(),HomeAD.class)) {
+			query.setCachePolicy(CachePolicy.CACHE_ELSE_NETWORK);
+		}else {
+			ShowToast("無網絡鏈接");
+			return;
+		}
 		query.findObjects(getActivity(), new FindListener<HomeAD>() {
 			
 			@Override
@@ -204,52 +155,20 @@ public class HomeFragment extends BaseFragment{
 				if(!(CollectionUtils.isNotNull(arg0)&&arg0.size()==4))
 					return;
 				ads=arg0;
-				downloadPics();
+				initBanner();
 			}
+			
 			@Override
 			public void onError(int arg0, String arg1) {
 				// TODO Auto-generated method stub
-				ShowLog("广告查询失败： "+arg1);
+				ShowLog("广告1查询失败： "+arg1);
 			}
 		});
 	}
 	
-	//下载图片
-	public void downloadPics(){
-		
-		for (int i = 0; i < ads.size(); i++) {
-			
-			
-			ShowLog("down>>"+ads.get(i).getPic().getFilename()+"    getFileUrl: "+ads.get(i).getPic().getFileUrl(getActivity())+"   url: "+ads.get(i).getPic().getUrl());
-			
-			BmobProFile.getInstance(getActivity()).download(ads.get(i).getPic().getFilename(), new DownloadListener() {
-	
-		        @Override
-		        public void onSuccess(String fullPath) {
-		            // TODO Auto-generated method stub
-		        	adpics.add(Drawable.createFromPath(fullPath));
-		            ShowLog("下载成功："+fullPath);
-		        }
-	
-		        @Override
-		        public void onProgress(String localPath, int percent) {
-		            // TODO Auto-generated method stub
-		        	ShowLog("download-->onProgress :"+percent);
-		        }
-	
-		        @Override
-		        public void onError(int statuscode, String errormsg) {
-		            // TODO Auto-generated method stub
-		        	ShowLog("下载出错："+statuscode +"--"+errormsg);
-		        }
-		    });
-		}
-	}
-	
-	
 	/** 
 	 * @Title: loadData2 
-	 * @Description: TODO
+	 * @Description: TODO下载广告2
 	 * @param 
 	 * @return void
 	 * @throws 
@@ -260,7 +179,14 @@ public class HomeFragment extends BaseFragment{
 		query.setMaxCacheAge(casheage);
 		query.addWhereNotEqualTo("top", true);
 		query.setLimit(ad2num);
-		query.setCachePolicy(CachePolicy.NETWORK_ELSE_CACHE);
+		if (isNetConnected()) {
+			query.setCachePolicy(CachePolicy.NETWORK_ELSE_CACHE);
+		}else if (query.hasCachedResult(getActivity(),HomeAD.class)) {
+			query.setCachePolicy(CachePolicy.CACHE_ELSE_NETWORK);
+		}else {
+			return;
+		}
+		
 		query.findObjects(getActivity(), new FindListener<HomeAD>() {
 			
 			@Override
@@ -273,36 +199,16 @@ public class HomeFragment extends BaseFragment{
 			@Override
 			public void onError(int arg0, String arg1) {
 				// TODO Auto-generated method stub
-				ShowLog("广告查询失败： "+arg1);
+				ShowLog("广告2查询失败： "+arg0+arg1);
 			}
 		});
 	}
 	
 	
-	//改变圆点颜色
-	public void	setDotState(int m)
-	{
-	
-	  for(int i=0;i<views.length;i++)
-	  {
-		  if(i==m)
-		  {
-			  views[i].setSelected(true);
-		  }
-		  else
-		  {
-			  views[i].setSelected(false);
-			  
-		  }
-			  
-	  }
-	
-	}
-	
 	//轮播动作
 	@SuppressLint("NewApi")
 	public void setImageSwitcherState(int direction) {
-		float halfWidth=imswitcher.getWidth()/2.0f;  
+		 float halfWidth=imswitcher.getWidth()/2.0f;  
 		 float halfHeight=imswitcher.getHeight()/2.0f;  
 		 int duration=500;  
 		 int depthz=0;
@@ -315,133 +221,229 @@ public class HomeFragment extends BaseFragment{
 		 rdout.setDuration(duration);    
 		 rdout.setFillAfter(true);
 		 imswitcher.setOutAnimation(rdout);
-		 
-		 
-		 i=(i+direction);
-		 
-		int p= i%4;
-		if(p>=0)
-		{
-			setDotState(p);
-			if (res.length>p) {
-				//imswitcher.setImageDrawable(adpics.get(p));
-				//imswitcher.setImageFromBmobFile(ads.get(p).getPic());
-				imswitcher.setImageResource(res[p]);
-				ShowLog("sssssssbbbbbbb");
-			}
+	}
+	
+
+	/** 
+	* @Title: initBanner 
+	* @Description: TODO
+	* @param 
+	* @return void
+	* @throws 
+	*/
+	private void initBanner() {
+		// TODO Auto-generated method stub
+		initImageLoader();
+		initAdView();
+	}
+	private ViewPager adViewPager;
+	private List<ImageView> imageViews;// 滑动的图片集合
+	private List<View> dots; // 图片标题正文的那些点
+	private List<View> dotList;
+	private TextView tv_date;
+	private TextView tv_title;
+	private TextView tv_topic_from;
+	private TextView tv_topic;
+	private int currentItem = 0; // 当前图片的索引号
+	// 定义的五个指示点
+	private View dot0;
+	private View dot1;
+	private View dot2;
+	private View dot3;
+	private View dot4;
+
+	private ScheduledExecutorService scheduledExecutorService;
+	private ImageLoader mImageLoader;
+	private DisplayImageOptions options;
+	private PagerAdapter mViewPagerAdapter;
+
+	private Handler handler = new Handler() {
+		public void handleMessage(android.os.Message msg) {
+			adViewPager.setCurrentItem(currentItem);
+		};
+	};
+
+	private void initImageLoader() {
+		File cacheDir = com.nostra13.universalimageloader.utils.StorageUtils
+				.getOwnCacheDirectory(App.getInstance(),
+						BmobConstants.MyTempDir);
+
+		DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+				.cacheInMemory(true).cacheOnDisc(true).build();
+
+		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
+				getActivity()).defaultDisplayImageOptions(defaultOptions)
+				.memoryCache(new LruMemoryCache(12 * 1024 * 1024))
+				.memoryCacheSize(12 * 1024 * 1024)
+				.discCacheSize(32 * 1024 * 1024).discCacheFileCount(100)
+				.discCache(new UnlimitedDiscCache(cacheDir))
+				.threadPriority(Thread.NORM_PRIORITY - 2)
+				.tasksProcessingOrder(QueueProcessingType.LIFO).build();
+
+		ImageLoader.getInstance().init(config);
 		
-		}else
-		{
-			
-		int	k=4+p;
-		setDotState(k);
-		if(res.length>k){
-			//imswitcher.setImageDrawable(adpics.get(k));
-			//imswitcher.setImageFromBmobFile(ads.get(k).getPic());
-			imswitcher.setImageResource(res[k]);
+		mImageLoader = ImageLoader.getInstance();
+		options = new DisplayImageOptions.Builder()
+				.showStubImage(R.drawable.top_banner_android)
+				.showImageForEmptyUri(R.drawable.top_banner_android)
+				.showImageOnFail(R.drawable.top_banner_android)
+				.cacheInMemory(true).cacheOnDisc(true)
+				.bitmapConfig(Bitmap.Config.RGB_565)
+				.imageScaleType(ImageScaleType.EXACTLY).build();
+	}
+
+	private void initAdView() {
+		imageViews = new ArrayList<ImageView>();
+
+		dots = new ArrayList<View>();
+		dotList = new ArrayList<View>();
+		dot0 = findViewById(R.id.v_dot0);
+		dot1 = findViewById(R.id.v_dot1);
+		dot2 = findViewById(R.id.v_dot2);
+		dot3 = findViewById(R.id.v_dot3);
+		dot4 = findViewById(R.id.v_dot4);
+		dots.add(dot0);
+		dots.add(dot1);
+		dots.add(dot2);
+		dots.add(dot3);
+		dots.add(dot4);
+		
+		tv_date = (TextView) findViewById(R.id.tv_date);
+		tv_title = (TextView) findViewById(R.id.tv_title);
+		tv_topic_from = (TextView) findViewById(R.id.tv_topic_from);
+		tv_topic = (TextView) findViewById(R.id.tv_topic);
+		
+		adViewPager = (ViewPager) findViewById(R.id.vp);
+		mViewPagerAdapter=new MyAdapter();
+		adViewPager.setAdapter(mViewPagerAdapter);
+		adViewPager.setOnPageChangeListener(new MyPageChangeListener());
+		addDynamicView();
+	}
+
+	private void addDynamicView() {
+		for (int i = 0; i < ads.size(); i++) {
+			ImageView imageView = new ImageView(getActivity());
+			mImageLoader.displayImage(ads.get(i).getPic().getFileUrl(getActivity()), imageView,options);
+			imageView.setScaleType(ScaleType.CENTER_CROP);
+			imageViews.add(imageView);
+			dots.get(i).setVisibility(View.VISIBLE);
+			dotList.add(dots.get(i));
 		}
-			
+		startAd();
+	}
+
+	private void startAd() {
+		scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+		// 当Activity显示出来后，每两秒切换一次图片显示
+		scheduledExecutorService.scheduleAtFixedRate(new ScrollTask(), 1, 3,
+				TimeUnit.SECONDS);
+	}
+
+	private class ScrollTask implements Runnable {
+
+		@Override
+		public void run() {
+			synchronized (adViewPager) {
+				currentItem = (currentItem + 1) % imageViews.size();
+				handler.obtainMessage().sendToTarget();
+			}
 		}
 	}
 	
-	private class MyGestureListener implements GestureDetector.OnGestureListener
-	{
+	private class MyPageChangeListener implements OnPageChangeListener {
 
+		private int oldPosition = 0;
 		@Override
-		public boolean onDown(MotionEvent e) {
-			// TODO Auto-generated method stub
-			return false;
+		public void onPageScrollStateChanged(int arg0) {
+
 		}
 
 		@Override
-		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-				float velocityY) {
-			// TODO Auto-generated method stub
-			setImageSwitcherState(velocityX >0?-1:1);  
-			return true;
-		}
+		public void onPageScrolled(int arg0, float arg1, int arg2) {
 
-		
-
-		@Override
-		public void onLongPress(MotionEvent e) {
-			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
-		public boolean onScroll(MotionEvent e1, MotionEvent e2,
-				float distanceX, float distanceY) {
-			// TODO Auto-generated method stub
-			return false;
+		public void onPageSelected(int position) {
+			currentItem = position;
+			HomeAD adDomain = ads.get(position);
+			tv_title.setText(adDomain.getName());
+			tv_date.setText(adDomain.getUpdatedAt().substring(0, adDomain.getUpdatedAt().indexOf(" ")));
+			tv_topic_from.setText("特价");
+			tv_topic.setText(adDomain.getPrice()+"");
+			dots.get(oldPosition).setBackgroundResource(R.drawable.dot_normal);
+			dots.get(position).setBackgroundResource(R.drawable.dot_focused);
+			oldPosition = position;
 		}
-
-		@Override
-		public void onShowPress(MotionEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public boolean onSingleTapUp(MotionEvent e) {
-			// TODO Auto-generated method stub
-			
-          int p= i%4;
-          if (null==ads.get(p)||null==ads.get(p).getFruit()) {
-        	  return true;
-          }
-			
-			if(p>=0)
-			{
-				startAnimActivityWithData(DetailActivity.class, "fruit", ads.get(p).getFruit());
-			}else
-			{
-				int k =4+p;
-				startAnimActivityWithData(DetailActivity.class, "fruit", ads.get(k).getFruit());
-			}
-			return true;
-		}
-
-		
-		
 	}
-	//自动轮播
-	class DownloadTask extends AsyncTask
-	 {
 
-		@SuppressWarnings("unchecked")
+	private class MyAdapter extends PagerAdapter {
+
 		@Override
-		protected Object doInBackground(Object... arg0) {
-			// TODO Auto-generated method stub
-			
-			for(int i=0;i<Integer.MAX_VALUE;i++)
-			{
-				try {
-					Thread.sleep(6000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+		public int getCount() {
+			return ads.size();
+		}
+
+		@Override
+		public Object instantiateItem(ViewGroup container, final int position) {
+			ImageView iv = imageViews.get(position);
+			((ViewPager) container).addView(iv);
+			final HomeAD adDomain = ads.get(position);
+			iv.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					startAnimActivityWithData(DetailActivity.class, "fruit", ads.get(position).getFruit());
 				}
-				
-				 publishProgress(null);
-				
-			}
-			
-			
+			});
+			return iv;
+		}
+
+		@Override
+		public void destroyItem(View arg0, int arg1, Object arg2) {
+			((ViewPager) arg0).removeView((View) arg2);
+		}
+
+		@Override
+		public boolean isViewFromObject(View arg0, Object arg1) {
+			return arg0 == arg1;
+		}
+
+		@Override
+		public void restoreState(Parcelable arg0, ClassLoader arg1) {
+
+		}
+
+		@Override
+		public Parcelable saveState() {
 			return null;
 		}
-		
-		
+
 		@Override
-		protected void onProgressUpdate(Object... values) {
-			// TODO Auto-generated method stub
-			super.onProgressUpdate(values);
-			setImageSwitcherState(1);  
-			
-		 
+		public void startUpdate(View arg0) {
+
 		}
-		
-	 }
+
+		@Override
+		public void finishUpdate(View arg0) {
+
+		}
+
+	}
 	
-	
+	@Override
+	protected void lazyLoad() {
+		// TODO Auto-generated method stub
+		loadData();
+		loadData2();
+	}
+
+	@Override
+	protected void onInvisible() {
+		super.onInvisible();
+		if (null!=scheduledExecutorService) {
+			scheduledExecutorService.shutdown();
+		}
+	}
+
 }

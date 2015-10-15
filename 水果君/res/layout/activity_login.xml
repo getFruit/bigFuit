@@ -19,7 +19,7 @@
         android:hint="   用户名/手机号"
         android:singleLine="true"
         android:maxLength="11"
-        android:textSize="26sp"
+        android:textSize="20sp"
          >
 
         <requestFocus />

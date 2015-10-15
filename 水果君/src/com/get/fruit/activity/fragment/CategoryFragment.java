@@ -30,18 +30,12 @@ public class CategoryFragment extends BaseFragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onActivityCreated(savedInstanceState);
-		initView();
 	}
 
-	/** 
-	* @Title: initView 
-	* @Description: TODO
-	* @param 
-	* @return void
-	* @throws 
-	*/
-	private void initView() {
+	@Override
+	protected void lazyLoad() {
 		// TODO Auto-generated method stub
+		
 	}
 	
 	
