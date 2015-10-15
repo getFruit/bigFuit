@@ -1,0 +1,360 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_all"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:background="@color/view_grap_gray"
+        android:gravity="center_vertical"
+        android:paddingLeft="30dp"
+        android:text="商品信息上传"
+        android:textColor="@color/base_color_blue" />
+
+    <EditText
+        android:id="@+id/add_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="名称：（默认为水果种类）"
+        android:textColor="@color/base_color_blue"
+        android:textSize="20sp">
+        <requestFocus />
+    </EditText>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusableInTouchMode="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:text="水果图片（长按删除）[第一张为主图]"
+                android:textColor="@color/text_color_gray" />
+
+
+             <com.get.fruit.big.view.MyGridView
+                 android:id="@+id/add_gridView"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:numColumns="3" >
+             </com.get.fruit.big.view.MyGridView>
+
+         
+         <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:background="@color/view_grap_gray" />
+
+            <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|center_horizontal"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="8dp" >
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="商品种类"
+                android:textColor="@color/text_color_gray"
+                android:textSize="20sp" />
+            
+            <TextView
+                android:id="@+id/add_category"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
+                android:text="苹果"
+                android:textColor="@color/text_green"
+                android:textSize="18sp" />
+
+            <ImageButton
+                android:id="@+id/add_category_choose"
+                android:layout_width="40dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center|right"
+                android:background="@color/base_color_all_transparent"
+                android:src="@drawable/add_choose" />
+
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent"
+            android:layout_height="0.8dp"
+            android:background="@color/line_color_gray"/>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|center_horizontal"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="8dp" >
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="季节"
+                android:textColor="@color/text_color_gray"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/add_season"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
+                android:text="春天"
+                android:textColor="@color/text_green"
+                android:textSize="18sp" />
+
+            <ImageButton
+                android:id="@+id/add_season_choose"
+                android:layout_width="40dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:background="@color/base_color_all_transparent"
+                android:src="@drawable/add_choose" />
+        </LinearLayout>
+		<LinearLayout android:layout_width="match_parent"
+            android:layout_height="0.8dp"
+            android:background="@color/line_color_gray"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|center_horizontal"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="8dp" >
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="产地"
+                android:textColor="@color/text_color_gray"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/add_origin"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
+                android:text="新疆"
+                android:textColor="@color/text_green"
+                android:textSize="18sp" />
+
+            <ImageButton
+                android:id="@+id/add_origin_choose"
+                android:layout_width="40dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:background="@color/base_color_all_transparent"
+                android:src="@drawable/add_choose" />
+        </LinearLayout>
+		<LinearLayout android:layout_width="match_parent"
+            android:layout_height="0.8dp"
+            android:background="@color/line_color_gray"/>
+		
+		
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|center_horizontal"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="8dp" >
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="颜色"
+                android:textColor="@color/text_color_gray"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/add_color"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
+                android:text="绿色"
+                android:textColor="@color/text_green"
+                android:textSize="18sp" />
+
+            <ImageButton
+                android:id="@+id/add_color_choose"
+                android:layout_width="40dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:background="@color/base_color_all_transparent"
+                android:src="@drawable/add_choose" />
+        </LinearLayout>
+		<LinearLayout android:layout_width="match_parent"
+            android:layout_height="0.8dp"
+            android:background="@color/line_color_gray"/>
+		
+		<LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="20dp"
+	        android:background="@color/view_grap_gray" />
+    
+		
+		
+		<LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|center_horizontal"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="8dp" >
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="商品价格"
+                android:textColor="@color/text_color_gray"
+                android:textSize="20sp" />
+            
+            <EditText
+                android:id="@+id/add_price"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
+                android:hint="输入商品价格"
+                android:textColor="@color/text_green"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:text="元/斤"
+                android:textColor="@color/text_color_gray"
+                android:textSize="18sp" />
+            
+           
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent"
+            android:layout_height="0.8dp"
+            android:background="@color/line_color_gray"/>
+
+		    
+		
+		<LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|center_horizontal"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="8dp" >
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="商品库存"
+                android:textColor="@color/text_color_gray"
+                android:textSize="20sp" />
+            
+            <EditText
+                android:id="@+id/add_count"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
+                android:hint="输入商品库存"
+                android:textColor="@color/text_green"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:text="斤"
+                android:textColor="@color/text_color_gray"
+                android:textSize="18sp" />
+            
+
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent"
+            android:layout_height="0.8dp"
+            android:background="@color/line_color_gray"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:background="@color/view_grap_gray"
+            android:orientation="vertical" >
+
+            <EditText
+                android:id="@+id/add_describe"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="20dp"
+                android:inputType="textMultiLine"
+				android:gravity="left|top"
+				android:minLines="6"
+                android:background="@drawable/shape_base"
+                android:height="80dp"
+                android:hint="   输入商品详细描述"
+                
+                >
+
+            </EditText>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/add_commit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="30dp"
+            android:background="@drawable/button_bg"
+            android:textColor="@color/base_color_white"
+            android:text="提交" />
+            
+        </LinearLayout>
+        
+    </ScrollView>
+    
+    
+    
+    
+    
+    
+     
+</LinearLayout>

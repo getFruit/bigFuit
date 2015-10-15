@@ -1,0 +1,126 @@
+<ScrollView
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+    
+    <LinearLayout
+        android:id="@+id/Lin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+       >
+        
+    <TextView
+        android:layout_width="match_parent"
+        android:background="@null"
+        android:layout_height="40dp"
+        android:text="@string/location_1"
+        android:textSize="18sp"
+        android:textColor="@color/text_1"
+        android:gravity="center_vertical|left"
+        />
+        <TextView
+            android:id="@+id/selected_address"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/ac_white"
+            android:textSize="20sp"
+            android:text="@string/location_tj"
+            android:gravity="center_vertical|left"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:background="@null"
+            android:layout_height="40dp"
+            android:text="@string/location_2"
+            android:textSize="18sp"
+            android:textColor="@color/text_1"
+            android:gravity="center_vertical|left"
+            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/ac_white">
+
+            <Button
+                android:id="@+id/SH"
+                android:layout_width="50dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_weight="0.25"
+                android:background="@drawable/keyword_shape"
+                android:onClick="hot_city"
+                android:tag="上海市"
+                android:text="上海"
+                android:textColor="@color/text_green"
+                android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/GZ"
+                android:layout_width="50dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_weight="0.25"
+                android:background="@drawable/keyword_shape"
+                android:onClick="hot_city"
+                android:tag="广东省-广州市"
+                android:text="广州"
+                android:textColor="@color/text_green"
+                android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/CD"
+                android:layout_width="50dp"
+                android:layout_height="40dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_weight="0.25"
+                android:background="@drawable/keyword_shape"
+                android:onClick="hot_city"
+                android:tag="成都市"
+                android:text="成都"
+                android:textColor="@color/text_green"
+                android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/SZ"
+                android:layout_width="50dp"
+                android:layout_height="40dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_weight="0.25"
+                android:background="@drawable/keyword_shape"
+                android:onClick="hot_city"
+                android:tag="广东省-深圳市"
+                android:text="深圳"
+                android:textColor="@color/text_green"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:background="@null"
+            android:layout_height="40dp"
+            android:text="@string/location_3"
+            android:textSize="18sp"
+            android:textColor="@color/text_1"
+            android:gravity="center_vertical|left"
+            />
+
+        <com.get.fruit.view.citypicker.CityPicker
+            android:id="@+id/citypicker"
+	        android:layout_width="fill_parent"
+	        android:layout_height="fill_parent"
+	        android:layout_gravity="center"
+	        android:gravity="center" >
+        </com.get.fruit.view.citypicker.CityPicker>
+        
+    </LinearLayout>
+    
+    
+</ScrollView>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.saicmotor.telematicsas"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/base_color_white"
+    android:orientation="vertical"
+    android:paddingRight="0dp" >
+
+
+    <EditText
+        android:id="@+id/editText_username_login"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_gravity="right"
+        android:hint="   用户名/手机号"
+        android:singleLine="true"
+        android:maxLength="11"
+        android:textSize="20sp"
+         >
+
+        <requestFocus />
+    </EditText>
+
+    <EditText
+        android:id="@+id/editText_password_login"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:hint="   密码"
+        android:inputType="textPassword"
+        android:maxLength="20"
+        android:textSize="20sp" >
+
+    </EditText>
+
+    <Button
+        android:id="@+id/bt_login"
+        android:layout_width="268dp"
+        android:layout_height="50dp"
+        android:layout_margin="35dp"
+        android:background="@drawable/button_bg"
+        android:text="登陆"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:textColor="@color/base_color_white"
+        android:textSize="25sp" />
+
+    <TextView
+        android:id="@+id/textView_register"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_marginRight="30dp"
+        android:gravity="right"
+        android:text="忘记密码？"
+        android:textColor="@color/color_blue_text" />
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/login_pic" />
+
+</LinearLayout>

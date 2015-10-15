@@ -1,0 +1,63 @@
+<resources>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="text_size_small">14sp</dimen>
+    <dimen name="text_size_medium">16sp</dimen>
+    <dimen name="text_size_large">18sp</dimen>
+    <dimen name="base_action_bar_height">48.0dip</dimen>
+    <dimen name="base_action_bar_title_size">22.0sp</dimen>
+    <dimen name="register_margin">10.0dp</dimen>
+    <dimen name="base_scrollview_top_height">50.0dip</dimen>
+    <dimen name="tab_padding_top_bottom">15dp</dimen>
+    <dimen name="tab_padding_left_right">40dp</dimen>
+    <dimen name="tab_height">48dp</dimen>
+    <dimen name="base_line_width_1">1dip</dimen>
+    <dimen name="base_line_width_2">2dip</dimen>
+    <dimen name="base_line_width">0.5dip</dimen>
+
+    <dimen name="time_line_line_left_margin">24dip</dimen>
+    <dimen name="time_line_line_width">2.0dip</dimen>
+    <dimen name="time_line_content_left_margin">52.0dip</dimen>
+    <dimen name="time_line_content_right_margin">7.0dip</dimen>
+    
+    <dimen name="score_item_height">100.0dip</dimen>
+     <dimen name="message_top_height">70.0dip</dimen>
+     
+     <dimen name="margin_chat_top">5.0dip</dimen>
+     
+         <!-- 常规 -->
+    <dimen name="layout_height">48dp</dimen>
+    <dimen name="top_title_textsize">18sp</dimen>
+    <!-- 标题栏文字大小 -->
+    <dimen name="title_textsize">16dp</dimen>
+    <!-- 标题文字大小 -->
+    <dimen name="normal_textsize">14dp</dimen>
+    <!-- 常规文字大小 -->
+    <dimen name="button_textsize">16dp</dimen>
+    <!-- 按钮文字大小 -->
+    <dimen name="line_height">1px</dimen>
+    <!-- 分割线 -->
+    <dimen name="layout_padding">20dp</dimen>
+    <dimen name="textview_padding">15dp</dimen>
+    <dimen name="layout_margin">15dp</dimen>
+
+    <!-- drawable -->
+    <dimen name="red_button_padding">20dp</dimen>
+    <dimen name="red_button_stroke">1px</dimen>
+    <dimen name="red_button_radius">32dp</dimen>
+    <dimen name="login_reg_button_vertical">8dp</dimen>
+    <dimen name="login_reg_button_horizontal">16dp</dimen>
+    <dimen name="login_reg_button_radius">8dp</dimen>
+    <dimen name="login_reg_button_stroke">1px</dimen>
+
+
+    <!-- LoginActivity -->
+    <dimen name="login_layout_margin">15dp</dimen>
+    <dimen name="login_layout_padding">20dp</dimen>
+    <dimen name="login_button_padding">30dp</dimen>
+    <dimen name="login_line_padding_vertical">5dp</dimen>
+    <dimen name="login_line_padding_horizontal">15dp</dimen>
+     
+</resources>

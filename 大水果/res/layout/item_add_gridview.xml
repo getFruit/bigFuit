@@ -1,0 +1,59 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/MyGridViewItemLayout"
+    android:layout_width="110dp"
+    android:layout_height="110dp"
+     xmlns:app="http://schemas.android.com/apk/res/com.get.fruit">
+
+	<com.get.fruit.big.view.CircleImageView
+        android:id="@+id/item_image"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/add_upload" />
+
+<!--     <ImageButton
+        android:id="@+id/item_CH"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/mygridviewitem_chahao"
+        android:visibility="gone" /> -->
+
+    <View
+        android:layout_width="0.5dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="6dp"
+         android:layout_marginBottom="6dp"
+        android:background="@color/line_bg" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="6dp"
+         android:layout_marginRight="6dp"
+        android:background="@color/line_bg" />
+
+
+<!-- <ImageView
+    android:id="@+id/item_image"
+    android:layout_width="70dp"
+    android:layout_height="70dp"
+    android:layout_alignParentLeft="true"
+    android:layout_centerVertical="true"
+    android:layout_margin="10dp"
+    android:src="@drawable/add_upload" />
+
+    <ImageButton
+        android:id="@+id/item_CH"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/mygridviewitem_chahao"
+        android:visibility="gone" /> -->
+</RelativeLayout>

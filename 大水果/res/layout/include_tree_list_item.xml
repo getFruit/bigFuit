@@ -1,0 +1,47 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="40dp" xmlns:app="http://schemas.android.com/apk/res/com.get.fruit">
+<!--
+    <ImageView
+        android:id="@+id/id_item_image"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"
+        android:src="@drawable/test_cart"
+        android:visibility="gone"
+        />
+     -->    
+      <com.get.fruit.big.view.CircleImageView
+        android:id="@+id/id_item_image"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/id_item_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/id_item_image"
+        android:layout_alignBottom="@+id/id_item_image"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="15dp"
+        android:src="@drawable/tree_ec" />
+
+    <TextView
+        android:id="@+id/id_item_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/id_item_image"
+        android:layout_alignBottom="@+id/id_item_image"
+        android:layout_toRightOf="@+id/id_item_image"
+        android:text="@string/hello_world"
+        android:textSize="18dp" />
+
+</RelativeLayout>

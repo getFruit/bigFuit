@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    
+       <!-- 通用颜色 -->
+    
+    <color name="base_color_black">#3e3e39</color>
+    <color name="base_color_gray">#D9D9D9</color>
+    <color name="base_color_white">#ffffff</color>
+    <color name="base_color_blue">#ff64C500</color>
+    <color name="base_color_blue_half">#ff99FE80</color>     
+    <color name="base_color_red">#F46306</color>
+    <color name="base_color_all_transparent">#00000000</color>
+    <color name="base_color_half_transparent">#b0000000</color>
+    <color name="base_color_transparent_bg">#80000000</color>
+    <color name="base_color_transparent_bg1">#e0000000</color>
+    
+    
+    <color name="view_grap_gray">#EDEDED</color>
+    <color name="line_color_gray">#A9AAA6</color>
+    <color name="line_color_black">#AAAAAA</color>
+    <color name="bg_color_gray">#F1F1F1</color>
+    <color name="bg_color_gray_2">#F3EFED</color>
+    <color name="bg_color_gray_unact">#88000000</color>
+    <color name="bg_color_black">#464646</color>
+    <color name="bg_color_green">#64C500</color>
+    <color name="text_color_gray">#666666</color><!-- 文字颜色 -->
+    <color name="text_color_green">#64C500</color><!-- 文字颜色 -->
+    <color name="text_color_orange">#FFA16D</color>
+    <color name="keyworld_shape_button">#ff30C93A</color>
+    
+    
+    
+    
+            <!-- 项目相关颜色 -->
+    <color name="main_buttons">#64c500</color>
+    <color name="action_bar_bg">#FF64c500</color>
+            
+            
+    <color name="background_tab_pressed">#6633B5E5</color>
+    <color name="activity_bg">#EAEAEA</color> <!-- 页面背景 -->
+    <color name="show_room_bg">#F3F3F3</color> 
+    <color name="title_bg">#d2232a</color> <!-- 标题文字背景 -->
+    <color name="line_bg">#cccccc</color> <!-- 分割线 -->
+    <color name="layout_select_bg">#dde9f9</color>
+    <color name="layout_value_color">#b5b5b5</color>
+    <color name="color_black_text">#333333</color>
+    <color name="red_button_normal">#d2232a</color>
+    <color name="red_button_selected">#db4f55</color>
+    <color name="red_button_disable">#b5b5b5</color>
+    <color name="red_button_stroke">#a4071c</color>
+    <color name="color_blue_text">#006ce5</color> 
+    <color name="color_solid_active">#dde9f9</color> 
+    
+    
+
+    
+    <color name="action_green">#78FB69</color>
+    <drawable name="dr_green">#78FB69</drawable>
+    <color name="ac_white">#FFFFFF</color>
+    <color name="text_1">#ABABAB</color>
+    <color name="text_green">#7CBD52</color>
+</resources>
