@@ -59,9 +59,8 @@ public class DetailActivity extends BaseActivity {
 	private Button addtocart;
 	
 	private MyViewPager mViewPager;
-	private int[] mImage = new int[]{R.drawable.aa,R.drawable.bb,R.drawable.cc};
-	private ImageView[] mImageViews = new ImageView[mImage.length];
-	
+	private int[] mImage;
+	private ImageView[] mImageViews;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -376,7 +375,6 @@ public class DetailActivity extends BaseActivity {
 					if (fruit==null) {
 						return;
 					}
-					//here
 					Fruit temp=new Fruit();
 					temp.setObjectId(fruit.getObjectId());
 					BmobRelation relation = new BmobRelation();
@@ -404,8 +402,11 @@ public class DetailActivity extends BaseActivity {
 					});
 					break;
 				case R.id.share:
-					testShare();
+					if (fruit==null||null==fruit.getName()) {
+						return;
+					}
 					popupwindow.dismiss();
+					testShare();
 					break;
 
 				default:
@@ -457,13 +458,12 @@ public class DetailActivity extends BaseActivity {
 	}
 	
 	private void testShare() {
-		// ShareDataÊ¹ÓÃÄÚÈÝ·ÖÏíÀàÐÍ·ÖÏíÀàÐÍ
 		ShareData shareData = new ShareData();
-		shareData.setTitle(fruit.getName());
-		shareData.setDescription("BmobÉç»á»¯·ÖÏí¹¦ÄÜ");
-		shareData.setText("BmobÌá¹©µÄ¶àÆ½Ì¨Éç»á»¯·ÖÏí¹¦ÄÜ£¬Ä¿Ç°Ö§³ÖQQ¡¢QQ¿Õ¼ä¡¢Î¢ÐÅ¡¢Î¢ÐÅÅóÓÑÈ¦¡¢ÌÚÑ¶Î¢²©¡¢ÐÂÀËÎ¢²©¡¢ÈËÈËÍøÆ½Ì¨µÄ·ÖÏí¹¦ÄÜ¡£ ");
-		shareData.setTarget_url("http://www.codenow.cn/");
-		shareData.setImageUrl("http://assets3.chuangyepu.com/system/startup_contents/logos/000/003/395/medium/data.jpeg");
+		shareData.setTitle("水果君");
+		shareData.setShareType(ShareData.SHARETYPE_IMAGEANDTEXT);
+		shareData.setDescription(fruit.getDescribe());
+		shareData.setText(fruit.getName());
+		shareData.setImageUrl(fruit.getPicture().getFileUrl(this));
 		
 		BMShareListener whiteViewListener = new BMShareListener() {
 

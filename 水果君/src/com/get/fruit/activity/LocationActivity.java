@@ -1,8 +1,6 @@
 package com.get.fruit.activity;
 
 
-import java.util.List;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;

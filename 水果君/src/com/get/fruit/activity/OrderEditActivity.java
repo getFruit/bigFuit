@@ -304,7 +304,7 @@ public class OrderEditActivity extends ActivityBase implements OnClickListener {
 		}
 		phoneString=(String) phone.getText();
 		if(!StringUtils.isPhone(phoneString)){
-			ShowToast("不写电话的默认打911，奥巴马来查水表咯");
+			ShowToast("不写电话的默认拨打911");
 			return false;
 		}
 		addressString=(String) address.getText();
@@ -343,14 +343,11 @@ public class OrderEditActivity extends ActivityBase implements OnClickListener {
 		payprice.setText(sum+"");
 	}
 
-	/* (non-Javadoc)
-	 * @see android.view.View.OnClickListener#onClick(android.view.View)
-	 */
 	@Override
 	public void onClick(View v) {
-		/*if (null==order) {
+		if (null==orders||orders.size()==0) {
 			return;
-		}*/
+		}
 		// TODO Auto-generated method stub
 		switch (v.getId()) {
 		case R.id.pay1:
@@ -473,7 +470,7 @@ public class OrderEditActivity extends ActivityBase implements OnClickListener {
 				public void unknow() {
 					hideDialog();
 					ShowLog("unlnow: ");
-					//startAnimActivityWithData(PayResultActivity.class, "result", "unknow");
+					startAnimActivityWithData(PayResultActivity.class, "result", "出现未知错误，请前往订单中心查询订单状态，如有疑问请联系我们");
 				}
 
 				@Override
@@ -496,7 +493,7 @@ public class OrderEditActivity extends ActivityBase implements OnClickListener {
 				public void fail(int code, String reason) {
 					hideDialog();
 					ShowLog("fail "+code+reason);
-					startAnimActivityWithData(PayResultActivity.class, "result", "fail:"+code+":"+reason);
+					startAnimActivityWithData(PayResultActivity.class, "result", "支付失败:"+code+":"+reason);
 				}
 			});
 		}
@@ -508,7 +505,7 @@ public class OrderEditActivity extends ActivityBase implements OnClickListener {
 			@Override
 			public void unknow() {
 				hideDialog();
-				startAnimActivityWithData(PayResultActivity.class, "result", "unknow");
+				startAnimActivityWithData(PayResultActivity.class, "result", "出现未知错误，请前往订单中心查询订单状态，如有疑问请联系我们");
 			}
 
 			@Override
@@ -557,7 +554,7 @@ public class OrderEditActivity extends ActivityBase implements OnClickListener {
 				} else if (code == -2) {
 					ShowToast("您取消了支付");
 				}
-				startAnimActivityWithData(PayResultActivity.class, "result", "fail:"+code+":"+reason);
+				startAnimActivityWithData(PayResultActivity.class, "result", "支付失败:"+code+":"+reason);
 			}
 		});
 	}
